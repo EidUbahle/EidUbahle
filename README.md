@@ -1,16 +1,14 @@
-## Hi there 👋
+# Hi, I'm Mohamed Eid
 
-<!--
-**EidUbahle/EidUbahle** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+🎓 University Lecturer / Academic Staff  
+💻 Teaching Web Development, Databases, and ERP Systems  
+📚 Passionate about education and technology  
+🌍 Kismayo, Somalia
 
-Here are some ideas to get you started:
+## Areas of Interest
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+- ASP.NET Web Forms
+- SQL Server
+- C#
+- Education Technology
+- University ERP Systems
