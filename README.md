@@ -1,4 +1,4 @@
-# Hi, I'm Mohamed Eid
+# Hi, I'm Eid Ubahle
 
 🎓 University Lecturer / Academic Staff  
 💻 Teaching Web Development, Databases, and ERP Systems  
@@ -7,7 +7,6 @@
 
 ## Areas of Interest
 
-- ASP.NET Web Forms
 - SQL Server
 - C#
 - Education Technology
