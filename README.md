@@ -1,13 +1,33 @@
-# Hi, I'm Eid Ubahle
+# Hi, I'm Eid Ubahle👋
 
-🎓 University Lecturer / Academic Staff  
-💻 Teaching Web Development, Databases, and ERP Systems  
-📚 Passionate about education and technology  
+🎓 Lecturer / Academic Staff  
+💻 Teaching Technology, Databases, and Web Development  
+🏫 University Educator  
 🌍 Kismayo, Somalia
 
-## Areas of Interest
+## About Me
 
+I am passionate about education, student development, and using technology to improve learning environments.
+
+## Teaching Areas
+
+- ASP.NET Web Forms
 - SQL Server
+- Database Design
 - C#
-- Education Technology
-- University ERP Systems
+- ERP Systems
+
+## Academic Resources
+
+📘 Teaching materials and examples are available in my repositories.
+
+## Current Focus
+
+- Building education systems
+- Course materials
+- Student practical labs
+- Software development
+
+## Contact
+
+📧 University Email Verified
