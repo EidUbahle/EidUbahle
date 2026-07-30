@@ -1,0 +1,331 @@
+/* =============================================================================
+   EidUbahle ERP – Additional Component Styles
+   Extends main.css with page-specific and module-specific components.
+   ============================================================================= */
+
+/* ── Data Table enhancements ─────────────────────────────────────────────── */
+.data-table th:first-child { padding-inline-start: 1.25rem; }
+.data-table td:first-child { padding-inline-start: 1.25rem; }
+.data-table th:last-child  { padding-inline-end: 1.25rem; }
+.data-table td:last-child  { padding-inline-end: 1.25rem; }
+
+/* Checkbox column */
+.data-table .col-check {
+  width: 40px;
+  text-align: center;
+  padding: 0 .5rem;
+}
+
+/* Number columns */
+.data-table .col-num, .data-table td.num {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+}
+
+/* Sticky first column */
+.data-table.sticky-first th:first-child,
+.data-table.sticky-first td:first-child {
+  position: sticky;
+  inset-inline-start: 0;
+  background: var(--bg-surface);
+  z-index: 1;
+  box-shadow: 2px 0 4px rgba(var(--shadow-color), .06);
+}
+
+/* Row actions (visible on hover) */
+.data-table tbody tr .row-actions { opacity: 0; transition: opacity .15s; }
+.data-table tbody tr:hover .row-actions { opacity: 1; }
+
+/* ── Form components ─────────────────────────────────────────────────────── */
+.form-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+.form-row .form-group { flex: 1; min-width: 0; }
+
+.form-section-title {
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  padding-bottom: .5rem;
+  border-bottom: 2px solid var(--accent);
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+/* Toggle switch */
+.toggle-switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-overlay);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background .25s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  inset-inline-start: 3px;
+  bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform .25s;
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--accent); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+html[dir="rtl"] .toggle-switch input:checked + .toggle-slider::before { transform: translateX(-18px); }
+
+/* Color picker swatch */
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border-color);
+  cursor: pointer;
+  transition: transform .15s;
+}
+.color-swatch:hover { transform: scale(1.1); }
+
+/* File upload zone */
+.file-drop-zone {
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  color: var(--text-muted);
+  font-size: .85rem;
+}
+.file-drop-zone:hover, .file-drop-zone.dragging {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+/* ── Status badge variants ────────────────────────────────────────────────── */
+.badge-draft    { background: var(--bg-elevated);   color: var(--text-muted); }
+.badge-posted   { background: var(--success-light); color: var(--success); }
+.badge-pending  { background: var(--warning-light); color: var(--warning); }
+.badge-rejected { background: var(--danger-light);  color: var(--danger); }
+.badge-cancelled{ background: var(--bg-elevated);   color: var(--text-muted); text-decoration: line-through; }
+
+/* ── Timeline (for audit logs) ────────────────────────────────────────────── */
+.timeline { position: relative; padding-inline-start: 1.75rem; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: .375rem;
+  top: .375rem;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-color);
+}
+.timeline-item { position: relative; padding-bottom: 1.5rem; }
+.timeline-dot {
+  position: absolute;
+  inset-inline-start: -1.375rem;
+  top: .1rem;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 2px solid var(--accent);
+  z-index: 1;
+}
+.timeline-dot.success { border-color: var(--success); }
+.timeline-dot.warning { border-color: var(--warning); }
+.timeline-dot.danger  { border-color: var(--danger);  }
+.timeline-time { font-size: .7rem; color: var(--text-muted); margin-bottom: .25rem; }
+.timeline-content { background: var(--bg-elevated); border-radius: var(--radius-md); padding: .75rem 1rem; }
+
+/* ── Split View (conflict resolution) ────────────────────────────────────── */
+.split-view {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (max-width: 768px) { .split-view { grid-template-columns: 1fr; } }
+
+.split-panel {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.split-panel-header {
+  padding: .625rem 1rem;
+  background: var(--bg-elevated);
+  font-size: .8rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.split-panel-body { padding: 1rem; font-size: .82rem; }
+
+/* Diff highlighting */
+.diff-added   { background: var(--success-light); }
+.diff-removed { background: var(--danger-light); text-decoration: line-through; opacity: .7; }
+
+/* ── Steps / Wizard ──────────────────────────────────────────────────────── */
+.wizard-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+}
+
+.wizard-step {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.wizard-step-indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: .8rem;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+
+.wizard-step.active .wizard-step-indicator {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.wizard-step.done .wizard-step-indicator {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+}
+
+.wizard-step-label {
+  font-size: .75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-inline-start: .5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wizard-step.active .wizard-step-label { color: var(--text-primary); font-weight: 600; }
+
+.wizard-step-connector {
+  height: 2px;
+  flex: 1;
+  background: var(--border-color);
+  margin: 0 .375rem;
+}
+
+.wizard-step.done ~ .wizard-step .wizard-step-connector { background: var(--success); }
+
+/* ── Loader overlay ──────────────────────────────────────────────────────── */
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(var(--shadow-color), 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--bg-overlay);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--text-muted);
+}
+.empty-state-icon { font-size: 3rem; margin-bottom: 1rem; opacity: .5; }
+.empty-state-title { font-size: 1rem; font-weight: 600; color: var(--text-secondary); margin-bottom: .5rem; }
+.empty-state-text  { font-size: .85rem; line-height: 1.6; }
+
+/* ── Notification list ───────────────────────────────────────────────────── */
+.notification-item {
+  display: flex;
+  gap: .875rem;
+  padding: .875rem 1rem;
+  border-bottom: 1px solid var(--divider-color);
+  cursor: pointer;
+  transition: background .1s;
+  text-decoration: none;
+  color: inherit;
+}
+.notification-item:hover { background: var(--bg-elevated); }
+.notification-item.unread { background: var(--accent-light); }
+.notification-item:last-child { border-bottom: none; }
+
+.notif-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.notif-title { font-size: .82rem; font-weight: 600; line-height: 1.4; }
+.notif-body  { font-size: .75rem; color: var(--text-muted); margin-top: .15rem; }
+.notif-time  { font-size: .68rem; color: var(--text-muted); margin-top: .25rem; }
+
+/* ── Responsive grid helpers ─────────────────────────────────────────────── */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+.grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .dash-charts-row, .dash-bottom-row { grid-template-columns: 1fr !important; }
+}
+
+/* ── Print invoice styles ─────────────────────────────────────────────────── */
+@media print {
+  .invoice-print-header { display: flex; justify-content: space-between; margin-bottom: 2rem; }
+  .invoice-print-table { width: 100%; border-collapse: collapse; }
+  .invoice-print-table th, .invoice-print-table td { border: 1px solid #ccc; padding: .5rem .75rem; font-size: .8rem; }
+  .invoice-print-totals { max-width: 320px; margin-inline-start: auto; margin-top: 1rem; }
+}
+
+/* ── Make body visible after theme init ──────────────────────────────────── */
+body[data-theme-ready] { visibility: visible; }

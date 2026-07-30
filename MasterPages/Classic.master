@@ -1,0 +1,304 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeFile="Classic.master.cs" Inherits="MasterPages_Classic" %>
+<!DOCTYPE html>
+<html runat="server" id="htmlRoot">
+<head runat="server">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#2563EB" id="metaThemeColor" />
+  <meta name="description" content="EidUbahle Enterprise ERP – Offline-First Accounting SaaS" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/images/icons/icon-96.png" type="image/png" />
+  <link rel="apple-touch-icon" href="/images/icons/icon-192.png" />
+
+  <!-- Bootstrap 5 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <!-- App styles -->
+  <link rel="stylesheet" href="/Styles/main.css" />
+  <link rel="stylesheet" href="/Styles/themes.css" />
+  <link rel="stylesheet" href="/Styles/components.css" />
+
+  <title>
+    <asp:ContentPlaceHolder ID="TitleContent" runat="server">EidUbahle ERP</asp:ContentPlaceHolder>
+  </title>
+
+  <asp:ContentPlaceHolder ID="HeadContent" runat="server" />
+</head>
+<body data-layout="classic" id="appBody">
+
+  <!-- Toast container -->
+  <div id="toast-container" role="alert" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Mobile overlay backdrop -->
+  <div id="sidebarOverlay" class="d-none" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:299;backdrop-filter:blur(2px);" onclick="App.closeSidebar()"></div>
+
+  <div class="layout-wrapper">
+
+    <!-- ── Classic Sidebar ─────────────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+
+      <!-- Brand / Logo -->
+      <a href="/Pages/Dashboard.aspx" class="sidebar-brand" id="sidebarBrand">
+        <img id="tenantLogo" src="/images/logo-default.svg" alt="Logo" />
+        <span class="sidebar-brand-name" id="tenantName">EidUbahle ERP</span>
+      </a>
+
+      <!-- Navigation -->
+      <nav class="sidebar-nav">
+
+        <!-- Overview -->
+        <div class="sidebar-section-label" data-i18n="nav.section.overview">Overview</div>
+        <a href="/Pages/Dashboard.aspx" class="nav-item" data-page="dashboard">
+          <span class="nav-icon"><i class="bi bi-speedometer2"></i></span>
+          <span class="nav-label" data-i18n="nav.dashboard">Dashboard</span>
+        </a>
+
+        <!-- Accounting -->
+        <div class="sidebar-section-label" data-i18n="nav.section.finance">Finance</div>
+        <a href="/Pages/Accounting/ChartOfAccounts.aspx" class="nav-item" data-page="coa" data-perm="accounting.coa.view">
+          <span class="nav-icon"><i class="bi bi-diagram-3"></i></span>
+          <span class="nav-label" data-i18n="nav.accounting">Accounting</span>
+        </a>
+        <a href="/Pages/Accounting/JournalEntry.aspx" class="nav-item" data-page="journal" data-perm="accounting.journal.view">
+          <span class="nav-icon"><i class="bi bi-journal-text"></i></span>
+          <span class="nav-label" data-i18n="nav.journals">Journal Entries</span>
+        </a>
+        <a href="/Pages/Banking/BankAccounts.aspx" class="nav-item" data-page="banking" data-perm="banking.account.view">
+          <span class="nav-icon"><i class="bi bi-bank"></i></span>
+          <span class="nav-label" data-i18n="nav.banking">Banking</span>
+        </a>
+
+        <!-- Trading -->
+        <div class="sidebar-section-label" data-i18n="nav.section.trading">Trading</div>
+        <a href="/Pages/Sales/Invoices.aspx" class="nav-item" data-page="invoices" data-perm="sales.invoice.view">
+          <span class="nav-icon"><i class="bi bi-receipt"></i></span>
+          <span class="nav-label" data-i18n="nav.sales">Sales</span>
+        </a>
+        <a href="/Pages/Purchases/PurchaseOrders.aspx" class="nav-item" data-page="purchases" data-perm="purchases.po.view">
+          <span class="nav-icon"><i class="bi bi-cart3"></i></span>
+          <span class="nav-label" data-i18n="nav.purchases">Purchases</span>
+        </a>
+        <a href="/Pages/Inventory/Products.aspx" class="nav-item" data-page="inventory" data-perm="inventory.product.view">
+          <span class="nav-icon"><i class="bi bi-box-seam"></i></span>
+          <span class="nav-label" data-i18n="nav.inventory">Inventory</span>
+        </a>
+
+        <!-- People -->
+        <div class="sidebar-section-label" data-i18n="nav.section.people">People</div>
+        <a href="/Pages/CRM/Contacts.aspx" class="nav-item" data-page="crm">
+          <span class="nav-icon"><i class="bi bi-people"></i></span>
+          <span class="nav-label" data-i18n="nav.crm">CRM</span>
+        </a>
+        <a href="/Pages/HR/Employees.aspx" class="nav-item" data-page="hr">
+          <span class="nav-icon"><i class="bi bi-person-badge"></i></span>
+          <span class="nav-label" data-i18n="nav.hr">HR &amp; Payroll</span>
+        </a>
+
+        <!-- Analytics -->
+        <div class="sidebar-section-label" data-i18n="nav.section.analytics">Analytics</div>
+        <a href="/Pages/Reports/Index.aspx" class="nav-item" data-page="reports" data-perm="reports.trialbalance.view">
+          <span class="nav-icon"><i class="bi bi-bar-chart-line"></i></span>
+          <span class="nav-label" data-i18n="nav.reports">Reports</span>
+        </a>
+
+        <!-- Administration -->
+        <div class="sidebar-section-label" data-i18n="nav.section.admin">Admin</div>
+        <a href="/Admin/Translations.aspx" class="nav-item" data-page="translations" data-perm="admin.translations.view" id="navTranslations">
+          <span class="nav-icon"><i class="bi bi-translate"></i></span>
+          <span class="nav-label" data-i18n="nav.translations">Translations</span>
+        </a>
+        <a href="/Admin/Settings.aspx" class="nav-item" data-page="settings" data-perm="admin.settings.view">
+          <span class="nav-icon"><i class="bi bi-gear"></i></span>
+          <span class="nav-label" data-i18n="nav.settings">Settings</span>
+        </a>
+
+      </nav>
+
+      <!-- Sidebar footer: user info + collapse button -->
+      <div class="sidebar-footer" style="padding:0.875rem 1.25rem;border-top:1px solid var(--border-color);margin-top:auto;">
+        <div class="d-flex align-items-center gap-2">
+          <div class="avatar avatar-sm" id="sidebarAvatar">U</div>
+          <div style="overflow:hidden;flex:1;" class="sidebar-brand-name">
+            <div class="truncate fw-600" id="sidebarUserName" style="font-size:.8rem;"></div>
+            <div class="truncate text-muted" id="sidebarBranchName" style="font-size:.7rem;"></div>
+          </div>
+          <button class="btn btn-ghost btn-icon sidebar-brand-name" onclick="App.logout()" data-i18n-title="nav.logout" title="Sign Out">
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Collapse toggle -->
+      <button id="sidebarCollapseBtn"
+              class="btn btn-ghost btn-icon"
+              style="position:absolute;top:14px;inset-inline-end:-16px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:50%;width:32px;height:32px;z-index:1;"
+              onclick="App.toggleSidebar()"
+              aria-label="Toggle sidebar">
+        <i class="bi bi-chevron-left" id="sidebarCollapseIcon"></i>
+      </button>
+
+    </aside>
+
+    <!-- ── Main Content ────────────────────────────────────────────────────── -->
+    <div class="main-content" id="mainContent">
+
+      <!-- Top bar -->
+      <header class="topbar">
+        <!-- Mobile menu -->
+        <button class="btn btn-ghost btn-icon d-lg-none" onclick="App.openSidebar()" aria-label="Open menu">
+          <i class="bi bi-list" style="font-size:1.25rem;"></i>
+        </button>
+
+        <!-- Breadcrumb (filled by page) -->
+        <nav aria-label="breadcrumb" style="flex:1;min-width:0;">
+          <asp:ContentPlaceHolder ID="BreadcrumbContent" runat="server" />
+        </nav>
+
+        <!-- Topbar actions -->
+        <div class="d-flex align-items-center gap-2">
+
+          <!-- Sync status -->
+          <button id="syncStatusBadge" class="sync-status-bar online" onclick="App.showSyncPanel()" title="Sync Status">
+            <span class="sync-dot"></span>
+            <span id="syncStatusText">Online</span>
+          </button>
+
+          <!-- Global search -->
+          <button class="btn btn-ghost btn-icon" onclick="App.openGlobalSearch()" aria-label="Search" data-i18n-title="common.search">
+            <i class="bi bi-search"></i>
+          </button>
+
+          <!-- Notifications -->
+          <button class="btn btn-ghost btn-icon" id="notifBtn" onclick="App.toggleNotifications()" aria-label="Notifications">
+            <i class="bi bi-bell"></i>
+            <span id="notifBadge" class="badge badge-danger" style="position:absolute;top:6px;inset-inline-end:6px;font-size:.6rem;padding:2px 5px;display:none;"></span>
+          </button>
+
+          <!-- Theme toggle -->
+          <button class="btn btn-ghost btn-icon" onclick="App.toggleTheme()" aria-label="Toggle theme" id="themeToggleBtn">
+            <i class="bi bi-sun" id="themeIcon"></i>
+          </button>
+
+          <!-- Company / Branch selector -->
+          <div class="dropdown">
+            <button class="btn btn-ghost" style="font-size:.78rem;" onclick="App.toggleDropdown('branchDropdown')" id="branchSelectorBtn">
+              <i class="bi bi-building"></i>
+              <span id="activeBranchLabel">Branch</span>
+              <i class="bi bi-chevron-down" style="font-size:.7rem;"></i>
+            </button>
+            <div class="dropdown-menu" id="branchDropdown"></div>
+          </div>
+
+          <!-- Language selector -->
+          <div class="dropdown">
+            <button class="btn btn-ghost btn-icon" onclick="App.toggleDropdown('langDropdown')" aria-label="Language">
+              <i class="bi bi-globe"></i>
+            </button>
+            <div class="dropdown-menu" id="langDropdown" style="min-width:160px;inset-inline-end:0;inset-inline-start:auto;"></div>
+          </div>
+
+          <!-- User menu -->
+          <div class="dropdown">
+            <button class="btn btn-ghost" style="gap:.5rem;" onclick="App.toggleDropdown('userDropdown')">
+              <div class="avatar avatar-sm" id="topbarAvatar">U</div>
+              <i class="bi bi-chevron-down" style="font-size:.7rem;"></i>
+            </button>
+            <div class="dropdown-menu" id="userDropdown" style="inset-inline-end:0;inset-inline-start:auto;min-width:200px;">
+              <div style="padding:.75rem 1rem;border-bottom:1px solid var(--border-color);">
+                <div class="fw-600" id="userMenuName" style="font-size:.85rem;"></div>
+                <div class="text-muted" id="userMenuEmail" style="font-size:.75rem;"></div>
+              </div>
+              <a class="dropdown-item" href="/Pages/Profile.aspx"><i class="bi bi-person-circle"></i><span data-i18n="nav.profile">My Profile</span></a>
+              <a class="dropdown-item" href="/Admin/Settings.aspx"><i class="bi bi-gear"></i><span data-i18n="nav.settings">Settings</span></a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item text-danger" href="#" onclick="App.logout();return false;"><i class="bi bi-box-arrow-right"></i><span data-i18n="nav.logout">Sign Out</span></a>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- Page content -->
+      <main id="pageMain" role="main">
+        <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+      </main>
+
+      <!-- Footer -->
+      <footer style="padding:.875rem 2rem;font-size:.72rem;color:var(--text-muted);border-top:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+        <span>© <script>document.write(new Date().getFullYear())</script> EidUbahle ERP. All rights reserved.</span>
+        <span id="footerVersion">v1.0.0</span>
+      </footer>
+
+    </div><!-- /main-content -->
+
+  </div><!-- /layout-wrapper -->
+
+  <!-- Global Search Modal -->
+  <div id="globalSearchOverlay" class="modal-overlay d-none" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:640px;">
+      <div class="modal-body" style="padding:1rem;">
+        <div class="input-group">
+          <span style="background:var(--bg-elevated);border:1px solid var(--border-color);border-inline-end:none;border-radius:var(--radius-md) 0 0 var(--radius-md);padding:.5rem .875rem;display:flex;align-items:center;color:var(--text-muted);">
+            <i class="bi bi-search"></i>
+          </span>
+          <input type="text" id="globalSearchInput" class="form-control" data-i18n-placeholder="common.search"
+                 style="border-inline-start:none;border-radius:0 var(--radius-md) var(--radius-md) 0;font-size:1rem;"
+                 autocomplete="off" />
+        </div>
+        <div id="globalSearchResults" style="margin-top:.75rem;max-height:400px;overflow-y:auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sync Panel Modal -->
+  <div id="syncPanelOverlay" class="modal-overlay d-none" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:480px;">
+      <div class="modal-header">
+        <span class="modal-title" data-i18n="sync.title">Sync Dashboard</span>
+        <button class="btn btn-ghost btn-icon" onclick="document.getElementById('syncPanelOverlay').classList.add('d-none')">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="syncPanelBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="SyncEngine.sync(true)">
+          <i class="bi bi-arrow-repeat"></i>
+          <span data-i18n="sync.manual_trigger">Sync Now</span>
+        </button>
+        <button class="btn btn-secondary" onclick="document.getElementById('syncPanelOverlay').classList.add('d-none')" data-i18n="common.close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <!-- Dexie.js (IndexedDB) -->
+  <script src="https://cdn.jsdelivr.net/npm/dexie@3.2.7/dist/dexie.min.js"></script>
+  <!-- Bootstrap 5 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmm3qAT9xnFdK6BRN6FVGnWdQqZdI" crossorigin="anonymous"></script>
+  <!-- Offline DB -->
+  <script src="/Scripts/offline/db.js"></script>
+  <!-- i18n -->
+  <script src="/Scripts/modules/i18n.js"></script>
+  <!-- Theme Engine -->
+  <script src="/Scripts/modules/theme.js"></script>
+  <!-- Sync Engine -->
+  <script src="/Scripts/sync/sync-engine.js"></script>
+  <!-- Main App -->
+  <script src="/Scripts/app.js"></script>
+
+  <asp:ContentPlaceHolder ID="ScriptContent" runat="server" />
+
+  <!-- Register Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(function(reg) { console.log('[App] SW registered'); })
+          .catch(function(err) { console.warn('[App] SW failed:', err); });
+      });
+    }
+  </script>
+
+</body>
+</html>
