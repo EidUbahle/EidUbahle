@@ -59,6 +59,13 @@ namespace EidUbahle.CrossCutting
         public static TenantRepository TenantRepository =>
             new TenantRepository(_connectionString);
 
+        // ── Phase 3: Accounting ──────────────────────────────────────────
+        public static AccountingService AccountingService =>
+            new AccountingService(_connectionString, _cache);
+
+        public static AccountingRepository AccountingRepository =>
+            new AccountingRepository(_connectionString);
+
         public static string ConnectionString =>
             _connectionString ?? throw new InvalidOperationException("ServiceLocator not initialized");
     }

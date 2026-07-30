@@ -32,6 +32,13 @@ namespace EidUbahle.Security
             "/admin/companies.aspx",
             "/admin/tenantsettings.aspx",
             "/admin/translations.aspx",
+            // Phase 3: Accounting
+            "/pages/accounting/chartofaccounts.aspx",
+            "/pages/accounting/journalentry.aspx",
+            "/pages/accounting/reports.aspx",
+            "/pages/accounting/fiscalperiods.aspx",
+            "/pages/banking/bankaccounts.aspx",
+            "/pages/reports/index.aspx",
         };
 
         private static readonly string[] PublicPrefixes = new[]

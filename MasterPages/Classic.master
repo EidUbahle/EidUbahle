@@ -64,6 +64,10 @@
           <span class="nav-icon"><i class="bi bi-journal-text"></i></span>
           <span class="nav-label" data-i18n="nav.journals">Journal Entries</span>
         </a>
+        <a href="/Pages/Accounting/FiscalPeriods.aspx" class="nav-item" data-page="fiscal" data-perm="accounting.period.view">
+          <span class="nav-icon"><i class="bi bi-calendar3"></i></span>
+          <span class="nav-label">Fiscal Periods</span>
+        </a>
         <a href="/Pages/Banking/BankAccounts.aspx" class="nav-item" data-page="banking" data-perm="banking.account.view">
           <span class="nav-icon"><i class="bi bi-bank"></i></span>
           <span class="nav-label" data-i18n="nav.banking">Banking</span>

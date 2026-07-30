@@ -1,6 +1,6 @@
 # EidUbahle Enterprise ERP
 
-**Phase 2 Complete – Multi-Tenancy, Users, Roles & RBAC**
+**Phase 3 Complete – Core Accounting Engine**
 
 A modern, production-ready **Enterprise Accounting SaaS Platform** built on:
 
@@ -198,21 +198,38 @@ EidUbahle/
 
 ---
 
-## Next Phase
+## Phase 3 Deliverables
 
-**Phase 3: Core Accounting Engine**
-- Chart of Accounts (multi-level, multi-currency)
-- Journal Entry with double-entry validation
-- Trial Balance, Balance Sheet, Income Statement
-- Bank account management + reconciliation
-- Fiscal period management (open/close)
-- Multi-currency support (exchange rates)
+- [x] **Schema_Phase3.sql**: Currencies, ExchangeRates, FiscalYears, FiscalPeriods, ChartOfAccounts, JournalEntries, JournalEntryLines, BankAccounts, BankReconciliations, AccountBalances (materialized cache), stored procedures (sp_PostJournalEntry, sp_GenerateJournalEntryNumber, sp_GetTrialBalance)
+- [x] **Seeds_Phase3.sql**: 15 currencies (USD, EUR, GBP, SAR, AED, KES, SOS, ETB, TZS …), 30 accounting/banking/reports permissions, role assignments
+- [x] **Phase3DTOs.cs**: Currencies, ExchangeRates, FiscalYear/Period, Account (COA), JournalEntry/Lines, TrialBalance, BalanceSheet, IncomeStatement, BankAccount, BankReconciliation DTOs
+- [x] **AccountingRepository.cs**: Full data access layer for all Phase 3 entities
+- [x] **AccountingService.cs**: Business logic – COA CRUD, Journal Entry with double-entry validation, Post/Reverse, Trial Balance, Balance Sheet, Income Statement, Bank Account CRUD, Reconciliation, Exchange Rates
+- [x] **Handlers**: `Accounts.ashx`, `Journals.ashx`, `Reports.ashx`, `FiscalPeriods.ashx`, `Banks.ashx`
+- [x] **Chart of Accounts** (`Pages/Accounting/ChartOfAccounts.aspx`): hierarchical tree view, CRUD, type/sub-type, posting/header flag, currency
+- [x] **Journal Entry** (`Pages/Accounting/JournalEntry.aspx`): list + new entry form, double-entry line editor, live balance check, save draft/post, post, reverse, delete
+- [x] **Fiscal Periods** (`Pages/Accounting/FiscalPeriods.aspx`): fiscal year CRUD with auto-generated 12 periods, open/close individual periods or entire year
+- [x] **Financial Reports** (`Pages/Accounting/Reports.aspx`): Trial Balance, Balance Sheet, Income Statement with company/year/period filters
+- [x] **Bank Accounts** (`Pages/Banking/BankAccounts.aspx`): CRUD, GL account linking, currency, opening balance
+- [x] **Reports redirect** (`Pages/Reports/Index.aspx`)
+- [x] **ServiceLocator** updated with AccountingService and AccountingRepository
+- [x] **JwtAuthModule** updated with all new page paths
+- [x] **Classic.master** sidebar updated with Fiscal Periods link
 
 ---
 
-*Built by EidUbahle – Enterprise Accounting SaaS Platform*
+## Next Phase
 
-A modern, production-ready **Enterprise Accounting SaaS Platform** built on:
+**Phase 4: Sales & Purchases**
+- Customer management
+- Sales invoices (with GL posting)
+- Purchase orders and supplier invoices
+- Payments & receipts
+- Accounts Receivable / Payable aging
+
+---
+
+
 
 | Layer | Technology |
 |-------|-----------|
