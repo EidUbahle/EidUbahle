@@ -431,22 +431,11 @@ const App = (() => {
 
   // ── AJAX helpers ───────────────────────────────────────────────────────────────
   function apiPost(url, data) {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', url, true);
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-      const token = localStorage.getItem('eid_access_token');
-      if (token) xhr.setRequestHeader('X-Auth-Token', token);
-      xhr.timeout = 15000;
-      xhr.onload  = () => { try { resolve(JSON.parse(xhr.responseText)); } catch { resolve(null); } };
-      xhr.onerror = xhr.ontimeout = () => resolve(null);
-      xhr.send(JSON.stringify(data));
-    });
+    return _apiFetch('POST', url, data);
   }
 
   function apiGet(url) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const xhr = new XMLHttpRequest();
       xhr.open('GET', url, true);
       xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
@@ -456,6 +445,29 @@ const App = (() => {
       xhr.onload  = () => { try { resolve(JSON.parse(xhr.responseText)); } catch { resolve(null); } };
       xhr.onerror = xhr.ontimeout = () => resolve(null);
       xhr.send();
+    });
+  }
+
+  function apiPut(url, data) {
+    return _apiFetch('PUT', url, data);
+  }
+
+  function apiDelete(url) {
+    return _apiFetch('DELETE', url, null);
+  }
+
+  function _apiFetch(method, url, data) {
+    return new Promise((resolve) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open(method, url, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      const token = localStorage.getItem('eid_access_token');
+      if (token) xhr.setRequestHeader('X-Auth-Token', token);
+      xhr.timeout = 15000;
+      xhr.onload  = () => { try { resolve(JSON.parse(xhr.responseText)); } catch { resolve(null); } };
+      xhr.onerror = xhr.ontimeout = () => resolve(null);
+      xhr.send(data ? JSON.stringify(data) : null);
     });
   }
 
@@ -495,7 +507,7 @@ const App = (() => {
     boot, logout, toggleTheme, toggleSidebar, openSidebar, closeSidebar,
     toggleCompactSidebar, toggleMobileMenu,
     toggleDropdown, showSyncPanel, openGlobalSearch, toggleNotifications,
-    showToast, changeLang, switchBranch, apiPost, apiGet,
+    showToast, changeLang, switchBranch, apiPost, apiGet, apiPut, apiDelete,
   };
 })();
 

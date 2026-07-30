@@ -4,6 +4,7 @@ using EidUbahle.Infrastructure.Caching;
 using EidUbahle.Infrastructure.Localization;
 using EidUbahle.Infrastructure.Security;
 using EidUbahle.Services;
+using EidUbahle.Repositories;
 
 namespace EidUbahle.CrossCutting
 {
@@ -39,6 +40,24 @@ namespace EidUbahle.CrossCutting
 
         public static TranslationService TranslationService =>
             new TranslationService(_connectionString, _cache);
+
+        public static UserService UserService =>
+            new UserService(_connectionString, _cache);
+
+        public static RoleService RoleService =>
+            new RoleService(_connectionString, _cache);
+
+        public static TenantService TenantService =>
+            new TenantService(_connectionString, _cache);
+
+        public static UserRepository UserRepository =>
+            new UserRepository(_connectionString);
+
+        public static RoleRepository RoleRepository =>
+            new RoleRepository(_connectionString);
+
+        public static TenantRepository TenantRepository =>
+            new TenantRepository(_connectionString);
 
         public static string ConnectionString =>
             _connectionString ?? throw new InvalidOperationException("ServiceLocator not initialized");

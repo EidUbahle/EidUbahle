@@ -23,6 +23,17 @@ namespace EidUbahle.Security
             "/manifest.webmanifest",
         };
 
+        // Paths that require JWT but are not admin-only (handled by page code-behind)
+        private static readonly HashSet<string> AuthenticatedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "/pages/onboarding.aspx",
+            "/admin/users.aspx",
+            "/admin/roles.aspx",
+            "/admin/companies.aspx",
+            "/admin/tenantsettings.aspx",
+            "/admin/translations.aspx",
+        };
+
         private static readonly string[] PublicPrefixes = new[]
         {
             "/scripts/",

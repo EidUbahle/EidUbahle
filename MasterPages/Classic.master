@@ -104,13 +104,25 @@
 
         <!-- Administration -->
         <div class="sidebar-section-label" data-i18n="nav.section.admin">Admin</div>
-        <a href="/Admin/Translations.aspx" class="nav-item" data-page="translations" data-perm="admin.translations.view" id="navTranslations">
+        <a href="/Admin/Users.aspx" class="nav-item" data-page="users" data-perm="admin.user.view">
+          <span class="nav-icon"><i class="bi bi-people"></i></span>
+          <span class="nav-label" data-i18n="nav.users">Users</span>
+        </a>
+        <a href="/Admin/Roles.aspx" class="nav-item" data-page="roles" data-perm="admin.role.view">
+          <span class="nav-icon"><i class="bi bi-shield-check"></i></span>
+          <span class="nav-label" data-i18n="nav.roles">Roles &amp; Permissions</span>
+        </a>
+        <a href="/Admin/Companies.aspx" class="nav-item" data-page="companies" data-perm="admin.company.view">
+          <span class="nav-icon"><i class="bi bi-building"></i></span>
+          <span class="nav-label" data-i18n="nav.companies">Companies &amp; Branches</span>
+        </a>
+        <a href="/Admin/TenantSettings.aspx" class="nav-item" data-page="tenant-settings" data-perm="admin.tenant.view">
+          <span class="nav-icon"><i class="bi bi-gear"></i></span>
+          <span class="nav-label" data-i18n="nav.tenant_settings">Tenant Settings</span>
+        </a>
+        <a href="/Admin/Translations.aspx" class="nav-item" data-page="translations" data-perm="admin.translation.view" id="navTranslations">
           <span class="nav-icon"><i class="bi bi-translate"></i></span>
           <span class="nav-label" data-i18n="nav.translations">Translations</span>
-        </a>
-        <a href="/Admin/Settings.aspx" class="nav-item" data-page="settings" data-perm="admin.settings.view">
-          <span class="nav-icon"><i class="bi bi-gear"></i></span>
-          <span class="nav-label" data-i18n="nav.settings">Settings</span>
         </a>
 
       </nav>

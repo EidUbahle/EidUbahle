@@ -329,3 +329,53 @@ html[dir="rtl"] .toggle-switch input:checked + .toggle-slider::before { transfor
 
 /* ── Make body visible after theme init ──────────────────────────────────── */
 body[data-theme-ready] { visibility: visible; }
+
+/* ── Phase 2: Admin UI components ────────────────────────────────────────── */
+
+/* Tab buttons (used in Users.aspx) */
+.tab-btn {
+  padding: .625rem 1.25rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: .875rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color .15s, border-color .15s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: .375rem;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+/* Form helpers */
+.form-hint { font-size: .75rem; color: var(--text-muted); margin-top: .25rem; }
+.form-check { display: flex; align-items: center; gap: .5rem; cursor: pointer; }
+.form-check-input { width: 1rem; height: 1rem; cursor: pointer; accent-color: var(--accent); }
+.form-check-label { font-size: .875rem; }
+.required::after { content: ' *'; color: var(--danger); }
+
+/* Role/permission matrix responsive */
+@media (max-width: 768px) {
+  .roles-layout { grid-template-columns: 1fr !important; }
+  .settings-layout { grid-template-columns: 1fr !important; }
+}
+
+/* Alert components */
+.alert { padding: .75rem 1rem; border-radius: var(--radius-sm); font-size: .875rem; }
+.alert-info { background: color-mix(in srgb, var(--accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent); color: var(--text); }
+.alert-danger { background: color-mix(in srgb, var(--danger) 12%, transparent); border: 1px solid color-mix(in srgb, var(--danger) 25%, transparent); color: var(--text); }
+.alert-success { background: color-mix(in srgb, var(--success) 12%, transparent); border: 1px solid color-mix(in srgb, var(--success) 25%, transparent); color: var(--text); }
+.alert-warning { background: color-mix(in srgb, var(--warning) 12%, transparent); border: 1px solid color-mix(in srgb, var(--warning) 25%, transparent); color: var(--text); }
+
+/* Compact button size */
+.btn-xs { padding: .25rem .5rem; font-size: .75rem; }
+
+/* Progress bar */
+.progress { background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-bar { background: var(--accent); transition: width .4s ease; }
+
+/* Spinner small */
+.spinner-sm { width: 20px; height: 20px; border-width: 2px; }
