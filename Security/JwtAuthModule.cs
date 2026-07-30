@@ -39,6 +39,11 @@ namespace EidUbahle.Security
             "/pages/accounting/fiscalperiods.aspx",
             "/pages/banking/bankaccounts.aspx",
             "/pages/reports/index.aspx",
+            // Phase 4: Inventory
+            "/pages/inventory/products.aspx",
+            "/pages/inventory/categories.aspx",
+            "/pages/inventory/warehouses.aspx",
+            "/pages/inventory/stockmovements.aspx",
         };
 
         private static readonly string[] PublicPrefixes = new[]

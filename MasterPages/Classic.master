@@ -85,7 +85,19 @@
         </a>
         <a href="/Pages/Inventory/Products.aspx" class="nav-item" data-page="inventory" data-perm="inventory.product.view">
           <span class="nav-icon"><i class="bi bi-box-seam"></i></span>
-          <span class="nav-label" data-i18n="nav.inventory">Inventory</span>
+          <span class="nav-label" data-i18n="nav.inventory">Products</span>
+        </a>
+        <a href="/Pages/Inventory/Categories.aspx" class="nav-item nav-item-sub" data-page="inv-categories" data-perm="inventory.category.view">
+          <span class="nav-icon"><i class="bi bi-tags"></i></span>
+          <span class="nav-label">Categories &amp; Brands</span>
+        </a>
+        <a href="/Pages/Inventory/Warehouses.aspx" class="nav-item nav-item-sub" data-page="inv-warehouses" data-perm="inventory.warehouse.view">
+          <span class="nav-icon"><i class="bi bi-building"></i></span>
+          <span class="nav-label">Warehouses</span>
+        </a>
+        <a href="/Pages/Inventory/StockMovements.aspx" class="nav-item nav-item-sub" data-page="inv-movements" data-perm="inventory.movement.view">
+          <span class="nav-icon"><i class="bi bi-arrow-left-right"></i></span>
+          <span class="nav-label">Stock Movements</span>
         </a>
 
         <!-- People -->

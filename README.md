@@ -1,6 +1,6 @@
 # EidUbahle Enterprise ERP
 
-**Phase 3 Complete – Core Accounting Engine**
+**Phase 4 Complete – Inventory & Products**
 
 A modern, production-ready **Enterprise Accounting SaaS Platform** built on:
 
@@ -82,11 +82,23 @@ CREATE DATABASE EidUbahleDB;
 -- 3. Run Phase 2 schema
 -- Execute: App_Data/Schema_Phase2.sql
 
--- 4. Seed translations
+-- 4. Run Phase 3 schema (Accounting)
+-- Execute: App_Data/Schema_Phase3.sql
+
+-- 5. Run Phase 4 schema (Inventory)
+-- Execute: App_Data/Schema_Phase4.sql
+
+-- 6. Seed translations
 -- Execute: App_Data/Seeds_Translations.sql
 
--- 5. Seed Phase 2 (roles, permissions, feature flags)
+-- 7. Seed Phase 2 (roles, permissions, feature flags)
 -- Execute: App_Data/Seeds_Phase2.sql
+
+-- 8. Seed Phase 3 (currencies, accounting permissions)
+-- Execute: App_Data/Seeds_Phase3.sql
+
+-- 9. Seed Phase 4 (inventory permissions)
+-- Execute: App_Data/Seeds_Phase4.sql
 ```
 
 ### 3. Configuration
@@ -218,12 +230,30 @@ EidUbahle/
 
 ---
 
+## Phase 4 Deliverables
+
+- [x] **Schema_Phase4.sql**: `inv_Categories`, `inv_Brands`, `inv_UOM`, `inv_Products`, `inv_ProductVariants`, `inv_Warehouses`, `inv_WarehouseLocations`, `inv_StockLevels` (materialized, with computed `QtyAvailable`), `inv_CostLayers` (FIFO layers), `inv_StockMovements`, `inv_StockMovementLines`, `inv_Batches`, `inv_SerialNumbers`, `inv_StockReservations`, `inv_LowStockAlerts`. Stored procedures: `sp_GenerateMovementNumber`, `sp_PostStockMovement` (FIFO layer consumption + AVCO recalculation + low-stock alert generation), `sp_ReserveStock`, `sp_ReleaseReservation`, `sp_GetStockValuation`
+- [x] **Seeds_Phase4.sql**: 38 inventory permissions (product/category/brand/uom/warehouse/movement/batch/reservation/valuation/alert)
+- [x] **Phase4DTOs.cs**: Category, Brand, UOM, Product (list & detail), Variant, Warehouse, Location, StockLevel, StockMovement/Lines, Batch, SerialNumber, StockReservation, LowStockAlert, StockValuation/Summary DTOs
+- [x] **InventoryRepository.cs**: Full data access layer – CRUD for all entities, `SeedDefaultUoms()` (12 standard units across Count/Weight/Volume/Length), batch/serial lookup, valuation via stored procedure
+- [x] **InventoryService.cs**: Business logic – validation, category/brand/UOM management, product CRUD with stock-guard on delete, warehouse management, stock movement lifecycle (Draft → Post), FIFO/AVCO valuation report, low-stock alert management, reservation engine (reserve/release)
+- [x] **Handlers**: `Products.ashx` (products + categories + brands + UOM), `Warehouses.ashx` (warehouses + locations + stock levels), `StockMovements.ashx` (movements + batches + serials), `Inventory.ashx` (stock levels + valuation + alerts + reservations)
+- [x] **Products** (`Pages/Inventory/Products.aspx`): searchable/filterable product list, full CRUD modal, per-product stock level drill-down, FIFO/AVCO stock valuation modal, low-stock alert bell with badge
+- [x] **Categories & Brands** (`Pages/Inventory/Categories.aspx`): hierarchical category tree CRUD, brand CRUD
+- [x] **Warehouses** (`Pages/Inventory/Warehouses.aspx`): warehouse card grid, location management, company/branch assignment, default warehouse enforcement
+- [x] **Stock Movements** (`Pages/Inventory/StockMovements.aspx`): Opening Stock / Adjustment / Transfer / Receipt / Issue – create with line editor, draft/post workflow, movement detail view
+- [x] **ServiceLocator** updated with `InventoryService` and `InventoryRepository`
+- [x] **JwtAuthModule** updated with all inventory page paths
+- [x] **Classic.master** sidebar updated with Products, Categories & Brands, Warehouses, Stock Movements sub-links
+
+---
+
 ## Next Phase
 
-**Phase 4: Sales & Purchases**
-- Customer management
-- Sales invoices (with GL posting)
-- Purchase orders and supplier invoices
+**Phase 5: Sales & Purchases**
+- Customer management (CRM contacts)
+- Sales invoices (with inventory issue + GL posting)
+- Purchase orders and supplier invoices (with inventory receipt + GL posting)
 - Payments & receipts
 - Accounts Receivable / Payable aging
 
