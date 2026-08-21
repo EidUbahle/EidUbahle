@@ -35,5 +35,14 @@ public static class TestServiceCollectionExtensions
 
         services.RemoveAll<IAuditLogRepository>();
         services.AddSingleton<IAuditLogRepository, FakeAuditLogRepository>();
+
+        services.RemoveAll<IRoleRepository>();
+        services.AddSingleton<IRoleRepository, FakeRoleRepository>();
+
+        services.RemoveAll<IPermissionRepository>();
+        services.AddSingleton<IPermissionRepository, FakePermissionRepository>();
+
+        services.RemoveAll<IUserRoleRepository>();
+        services.AddSingleton<IUserRoleRepository, FakeUserRoleRepository>();
     }
 }
