@@ -1,0 +1,5 @@
+@CentralIdentity.Api_HostAddress = http://localhost:5128
+
+GET {{CentralIdentity.Api_HostAddress}}/api/health
+
+###

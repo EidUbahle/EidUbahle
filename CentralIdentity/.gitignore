@@ -1,0 +1,11 @@
+# Secrets / signing keys — must never be committed
+*.pem
+*.key
+*.pfx
+
+# Build artifacts
+bin/
+obj/
+
+# Logs
+logs/
