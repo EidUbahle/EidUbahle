@@ -48,6 +48,7 @@ public sealed class UserApplicationService : IUserApplicationService
             UserId = userId,
             ApplicationId = applicationId,
             IsActive = true,
+            Status = "Active",
             AssignedAtUtc = DateTime.UtcNow,
             SecurityStamp = GenerateSecurityStamp()
         };
@@ -67,6 +68,7 @@ public sealed class UserApplicationService : IUserApplicationService
         var ua = await _repo.GetAsync(userId, applicationId, ct);
         if (ua is null) return Result.Failure("UserApplication not found.");
         ua.IsActive = true;
+        ua.Status = "Active";
         ua.RevokedAtUtc = null;
         ua.RevocationReason = null;
         await _repo.UpdateAsync(ua, ct);
@@ -78,6 +80,8 @@ public sealed class UserApplicationService : IUserApplicationService
         var ua = await _repo.GetAsync(userId, applicationId, ct);
         if (ua is null) return Result.Failure("UserApplication not found.");
         ua.IsActive = false;
+        if (!string.Equals(ua.Status, "Revoked", StringComparison.Ordinal))
+            ua.Status = "Inactive";
         await _repo.UpdateAsync(ua, ct);
         return Result.Success();
     }
@@ -87,6 +91,7 @@ public sealed class UserApplicationService : IUserApplicationService
         var ua = await _repo.GetAsync(userId, applicationId, ct);
         if (ua is null) return Result.Failure("UserApplication not found.");
         ua.IsActive = false;
+        ua.Status = "Revoked";
         ua.RevokedAtUtc = DateTime.UtcNow;
         ua.RevocationReason = reason;
         ua.SecurityStamp = GenerateSecurityStamp();

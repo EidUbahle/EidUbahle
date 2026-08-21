@@ -6,6 +6,7 @@ public sealed class IdentityUserApplication
     public long UserId { get; set; }
     public long ApplicationId { get; set; }
     public bool IsActive { get; set; } = true;
+    public string? Status { get; set; } = "Active";
     public DateTime AssignedAtUtc { get; set; } = DateTime.UtcNow;
     public DateTime? LastAccessAtUtc { get; set; }
     public DateTime? LastActivityAtUtc { get; set; }

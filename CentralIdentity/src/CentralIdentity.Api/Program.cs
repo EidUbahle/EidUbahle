@@ -1,3 +1,4 @@
+using CentralIdentity.Api.BackgroundServices;
 using CentralIdentity.Api.Extensions;
 using CentralIdentity.Api.Middleware;
 using Serilog;
@@ -42,6 +43,7 @@ try
 
     // Application services (DI)
     builder.Services.AddApiServices(builder.Configuration);
+    builder.Services.AddHostedService<ApplicationInactivityService>();
 
     // Configure token-based auth (RS256 signed, asymmetric key) for OAuth2/OIDC protected endpoints
     builder.Services.AddJwtAuthentication();
