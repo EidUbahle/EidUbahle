@@ -91,10 +91,16 @@ Key settings in `appsettings.json`:
 }
 ```
 
-## What Comes in Phase 2
+## Phase 2 & 3 (Implemented)
 
-- User registration & login
-- JWT access tokens + refresh tokens
-- Password hashing (BCrypt)
+- User, Application, and User-Application management (CRUD) via raw ADO.NET repositories
+- Password hashing with PBKDF2-HMAC-SHA512 (310,000 iterations); client secrets hashed with PBKDF2-HMAC-SHA256
+- OAuth2 authorization_code grant with mandatory PKCE (S256), single-use authorization codes
+- RS256-signed (asymmetric) JWT access tokens, `/.well-known/openid-configuration` and `/.well-known/jwks.json` discovery endpoints
+
+## What Comes Next
+
+- Refresh tokens
 - Role / permission management
 - Audit logging
+- Interactive login/session UI (the current `/connect/authorize` endpoint identifies the user via a `user_id` parameter as a placeholder for a real session mechanism)

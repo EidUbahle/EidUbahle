@@ -191,7 +191,37 @@ public class OAuthFlowTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
-    public async Task TokenExchange_WithWrongClientSecret_ReturnsUnauthorized()
+    public async Task TokenExchange_WithIncorrectNonEmptyClientSecret_ReturnsUnauthorized()
+    {
+        var (user, app, _) = await SeedAsync();
+        var codeChallenge = ComputeS256Challenge("correct-verifier-value-1234567890");
+        var client = _factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+
+        var authorizeUrl = "/connect/authorize" +
+            $"?response_type=code&client_id={app.ClientId}&redirect_uri=https://client.example.com/callback" +
+            $"&code_challenge={codeChallenge}&code_challenge_method=S256&user_id={user.UserId}";
+        var authorizeResponse = await client.GetAsync(authorizeUrl);
+        var location = authorizeResponse.Headers.Location!.ToString();
+        var code = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(new Uri(location).Query)["code"].ToString();
+
+        // Uses a well-formed, non-empty secret that simply does not match the registered hash —
+        // this must be rejected even though it passes the "is the field non-empty" check.
+        var tokenForm = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["grant_type"] = "authorization_code",
+            ["code"] = code!,
+            ["redirect_uri"] = "https://client.example.com/callback",
+            ["client_id"] = app.ClientId,
+            ["client_secret"] = "this-is-definitely-not-the-right-secret",
+            ["code_verifier"] = "correct-verifier-value-1234567890"
+        });
+        var tokenResponse = await client.PostAsync("/connect/token", tokenForm);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, tokenResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task TokenExchange_WithMissingClientSecret_ReturnsUnauthorized()
     {
         var (user, app, _) = await SeedAsync();
         var codeChallenge = ComputeS256Challenge("correct-verifier-value-1234567890");
@@ -213,9 +243,9 @@ public class OAuthFlowTests : IClassFixture<WebApplicationFactory<Program>>
             ["client_secret"] = string.Empty,
             ["code_verifier"] = "correct-verifier-value-1234567890"
         });
-        var tokenResponse = await client.PostAsync("/connect/token", tokenForm);
+        var tokenResponse2 = await client.PostAsync("/connect/token", tokenForm);
 
-        Assert.Equal(HttpStatusCode.Unauthorized, tokenResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, tokenResponse2.StatusCode);
     }
 
     [Fact]

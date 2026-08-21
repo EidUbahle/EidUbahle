@@ -23,6 +23,7 @@ public sealed class ConnectController : ControllerBase
     private readonly IUserApplicationRepository _userAppRepo;
     private readonly IAuthorizationCodeService _authCodeService;
     private readonly IAccessTokenService _accessTokenService;
+    private readonly IClientSecretHasher _clientSecretHasher;
     private readonly OAuthOptions _oauthOptions;
     private readonly JwtOptions _jwtOptions;
 
@@ -32,6 +33,7 @@ public sealed class ConnectController : ControllerBase
         IUserApplicationRepository userAppRepo,
         IAuthorizationCodeService authCodeService,
         IAccessTokenService accessTokenService,
+        IClientSecretHasher clientSecretHasher,
         IOptions<OAuthOptions> oauthOptions,
         IOptions<JwtOptions> jwtOptions)
     {
@@ -40,6 +42,7 @@ public sealed class ConnectController : ControllerBase
         _userAppRepo = userAppRepo;
         _authCodeService = authCodeService;
         _accessTokenService = accessTokenService;
+        _clientSecretHasher = clientSecretHasher;
         _oauthOptions = oauthOptions.Value;
         _jwtOptions = jwtOptions.Value;
     }
@@ -141,6 +144,9 @@ public sealed class ConnectController : ControllerBase
         {
             if (string.IsNullOrWhiteSpace(request.ClientSecret) || app.ClientSecretHash is null)
                 return Unauthorized(new OAuthErrorResponse { Error = "invalid_client", ErrorDescription = "client_secret is required for confidential clients." });
+
+            if (!_clientSecretHasher.VerifySecret(request.ClientSecret, app.ClientSecretHash))
+                return Unauthorized(new OAuthErrorResponse { Error = "invalid_client", ErrorDescription = "client_secret is invalid." });
         }
 
         var codeValidation = await _authCodeService.ValidateAndConsumeAsync(new ValidateAuthorizationCodeCommand(
