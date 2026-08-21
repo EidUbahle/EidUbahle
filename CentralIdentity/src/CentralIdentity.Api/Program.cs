@@ -43,6 +43,10 @@ try
     // Application services (DI)
     builder.Services.AddApiServices(builder.Configuration);
 
+    // Configure token-based auth (RS256 signed, asymmetric key) for OAuth2/OIDC protected endpoints
+    builder.Services.AddJwtAuthentication();
+    builder.Services.AddAuthorization();
+
     // HTTPS
     builder.Services.AddHsts(options =>
     {
@@ -76,6 +80,7 @@ try
         options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
     });
     app.UseCors("DefaultCors");
+    app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
 

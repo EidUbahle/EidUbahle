@@ -1,10 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "MdKhK00BU1c=",
+  "dgSpecHash": "DfdZY6QIClE=",
   "success": true,
   "projectFilePath": "/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Application/CentralIdentity.Application.csproj",
   "expectedPackageFiles": [
+    "/tmp/codeql-scratch-b521f0ce3e790663/dbs/csharp/working/packages/microsoft.extensions.configuration.abstractions/8.0.0/microsoft.extensions.configuration.abstractions.8.0.0.nupkg.sha512",
+    "/tmp/codeql-scratch-b521f0ce3e790663/dbs/csharp/working/packages/microsoft.extensions.configuration.binder/8.0.0/microsoft.extensions.configuration.binder.8.0.0.nupkg.sha512",
     "/tmp/codeql-scratch-b521f0ce3e790663/dbs/csharp/working/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.2/microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512",
+    "/tmp/codeql-scratch-b521f0ce3e790663/dbs/csharp/working/packages/microsoft.extensions.logging.abstractions/8.0.3/microsoft.extensions.logging.abstractions.8.0.3.nupkg.sha512",
+    "/tmp/codeql-scratch-b521f0ce3e790663/dbs/csharp/working/packages/microsoft.extensions.options/8.0.2/microsoft.extensions.options.8.0.2.nupkg.sha512",
+    "/tmp/codeql-scratch-b521f0ce3e790663/dbs/csharp/working/packages/microsoft.extensions.options.configurationextensions/8.0.0/microsoft.extensions.options.configurationextensions.8.0.0.nupkg.sha512",
+    "/tmp/codeql-scratch-b521f0ce3e790663/dbs/csharp/working/packages/microsoft.extensions.primitives/8.0.0/microsoft.extensions.primitives.8.0.0.nupkg.sha512",
     "/tmp/codeql-scratch-b521f0ce3e790663/dbs/csharp/working/packages/microsoft.netcore.app.ref/8.0.29/microsoft.netcore.app.ref.8.0.29.nupkg.sha512",
     "/tmp/codeql-scratch-b521f0ce3e790663/dbs/csharp/working/packages/microsoft.aspnetcore.app.ref/8.0.29/microsoft.aspnetcore.app.ref.8.0.29.nupkg.sha512"
   ],

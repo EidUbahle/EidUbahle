@@ -1,12 +1,22 @@
+using CentralIdentity.Application.Options;
+using CentralIdentity.Application.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CentralIdentity.Application.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
-        // Register application-layer services here as they are added in future phases.
+        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+        services.Configure<OAuthOptions>(configuration.GetSection(OAuthOptions.SectionName));
+
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IApplicationService, ApplicationService>();
+        services.AddScoped<IUserApplicationService, UserApplicationService>();
+        services.AddScoped<IAuthorizationCodeService, AuthorizationCodeService>();
+
         return services;
     }
 }

@@ -493,3 +493,5 @@
 /home/runner/work/EidUbahle/EidUbahle/CentralIdentity/tests/CentralIdentity.IntegrationTests/obj/Release/net8.0/CentralIdentity.IntegrationTests.pdb
 /home/runner/work/EidUbahle/EidUbahle/CentralIdentity/tests/CentralIdentity.IntegrationTests/obj/Release/net8.0/CentralIdentity.IntegrationTests.genruntimeconfig.cache
 /home/runner/work/EidUbahle/EidUbahle/CentralIdentity/tests/CentralIdentity.IntegrationTests/obj/Release/net8.0/ref/CentralIdentity.IntegrationTests.dll
+/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/tests/CentralIdentity.IntegrationTests/bin/Release/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/tests/CentralIdentity.IntegrationTests/bin/Release/net8.0/xunit.runner.json

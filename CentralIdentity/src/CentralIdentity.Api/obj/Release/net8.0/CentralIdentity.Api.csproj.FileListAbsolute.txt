@@ -97,3 +97,4 @@
 /home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Api/obj/Release/net8.0/CentralIdentity.Api.pdb
 /home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Api/obj/Release/net8.0/CentralIdentity.Api.genruntimeconfig.cache
 /home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Api/obj/Release/net8.0/ref/CentralIdentity.Api.dll
+/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Api/bin/Release/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll

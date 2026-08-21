@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\CentralIdentity.Application\CentralIdentity.Application.csproj" />
     <ProjectReference Include="..\..\src\CentralIdentity.Domain\CentralIdentity.Domain.csproj" />
+    <ProjectReference Include="..\..\src\CentralIdentity.Infrastructure\CentralIdentity.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
