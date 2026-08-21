@@ -1,7 +1,0 @@
-{
-  "CentralIdentity.Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/runner\/work\/EidUbahle\/EidUbahle\/CentralIdentity\/src\/CentralIdentity.Api",
-  "CentralIdentity.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/runner\/work\/EidUbahle\/EidUbahle\/CentralIdentity\/src\/CentralIdentity.Application",
-  "CentralIdentity.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/runner\/work\/EidUbahle\/EidUbahle\/CentralIdentity\/src\/CentralIdentity.Contracts",
-  "CentralIdentity.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/runner\/work\/EidUbahle\/EidUbahle\/CentralIdentity\/src\/CentralIdentity.Domain",
-  "CentralIdentity.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/runner\/work\/EidUbahle\/EidUbahle\/CentralIdentity\/src\/CentralIdentity.Infrastructure"
-}

@@ -4,6 +4,7 @@ using CentralIdentity.Application.Common.Interfaces;
 using CentralIdentity.Application.Options;
 using CentralIdentity.Application.Services;
 using CentralIdentity.Contracts.OAuth;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -100,7 +101,10 @@ public sealed class ConnectController : ControllerBase
         if (app is null || !app.IsActive)
             return BadRequest(new OAuthErrorResponse { Error = "unauthorized_client", ErrorDescription = "Unknown or inactive client." });
 
-        if (!app.GetRedirectUris().Contains(redirectUri, StringComparer.Ordinal))
+        var registeredRedirectUri = app.GetRedirectUris()
+            .FirstOrDefault(uri => string.Equals(uri, redirectUri, StringComparison.Ordinal));
+
+        if (registeredRedirectUri is null)
             return BadRequest(new OAuthErrorResponse { Error = "invalid_request", ErrorDescription = "redirect_uri is not registered for this client." });
 
         var user = await _userRepo.GetByIdAsync(effectiveUserId!.Value, ct);
@@ -115,15 +119,18 @@ public sealed class ConnectController : ControllerBase
             return BadRequest(new OAuthErrorResponse { Error = "access_denied", ErrorDescription = "User does not have access to this application." });
 
         var codeResult = await _authCodeService.CreateAuthorizationCodeAsync(new CreateAuthorizationCodeCommand(
-            user.UserId, app.ApplicationId, app.ClientId, redirectUri, scope ?? string.Empty, codeChallenge, codeChallengeMethod), ct);
+            user.UserId, app.ApplicationId, app.ClientId, registeredRedirectUri, scope ?? string.Empty, codeChallenge, codeChallengeMethod), ct);
 
         if (codeResult.IsFailure)
             return BadRequest(new OAuthErrorResponse { Error = "invalid_request", ErrorDescription = codeResult.Error });
 
-        var separator = redirectUri.Contains('?') ? '&' : '?';
-        var location = $"{redirectUri}{separator}code={Uri.EscapeDataString(codeResult.Value)}";
-        if (!string.IsNullOrEmpty(state))
-            location += $"&state={Uri.EscapeDataString(state)}";
+        var location = QueryHelpers.AddQueryString(
+            registeredRedirectUri,
+            new Dictionary<string, string?>()
+            {
+                ["code"] = codeResult.Value,
+                ["state"] = string.IsNullOrEmpty(state) ? null : state
+            });
 
         return Redirect(location);
     }

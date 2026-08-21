@@ -96,10 +96,19 @@ public sealed class UserApplicationService : IUserApplicationService
         ua.RevocationReason = reason;
         ua.SecurityStamp = GenerateSecurityStamp();
         await _repo.UpdateAsync(ua, ct);
-        _logger.LogInformation("UserApplication (User={UserId}, App={AppId}) revoked. Reason: {Reason}", userId, applicationId, reason);
+        _logger.LogInformation(
+            "UserApplication (User={UserId}, App={AppId}) revoked. Reason: {Reason}",
+            userId,
+            applicationId,
+            SanitizeForLog(reason));
         return Result.Success();
     }
 
     private static string GenerateSecurityStamp() =>
         Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32));
+
+    private static string? SanitizeForLog(string? value) =>
+        value?
+            .Replace("\r", "\\r", StringComparison.Ordinal)
+            .Replace("\n", "\\n", StringComparison.Ordinal);
 }

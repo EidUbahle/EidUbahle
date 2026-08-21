@@ -479,6 +479,14 @@
               "target": "Package",
               "version": "[17.8.0, )"
             },
+            "System.Net.Http": {
+              "target": "Package",
+              "version": "[4.3.4, )"
+            },
+            "System.Text.RegularExpressions": {
+              "target": "Package",
+              "version": "[4.3.1, )"
+            },
             "coverlet.collector": {
               "target": "Package",
               "version": "[6.0.0, )"

@@ -94,7 +94,7 @@ public sealed class ApplicationService : IApplicationService
         };
 
         var id = await _appRepo.CreateAsync(app, ct);
-        _logger.LogInformation("Application registered: {ApplicationCode} (ID={ApplicationId})", code, id);
+        _logger.LogInformation("Application registered: {ApplicationCode} (ID={ApplicationId})", SanitizeForLog(code), id);
 
         return Result.Success(new ApplicationRegistrationResult(id, code, clientId, plainSecret, clientType, app.Audience));
     }
@@ -153,4 +153,8 @@ public sealed class ApplicationService : IApplicationService
     private static string GeneratePlainClientSecret() =>
         Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(40))
             .Replace('+', '-').Replace('/', '_').TrimEnd('=');
+
+    private static string SanitizeForLog(string value) =>
+        value.Replace("\r", "\\r", StringComparison.Ordinal)
+            .Replace("\n", "\\n", StringComparison.Ordinal);
 }
