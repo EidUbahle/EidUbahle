@@ -1,0 +1,11 @@
+/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Contracts/bin/Release/net8.0/CentralIdentity.Contracts.deps.json
+/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Contracts/bin/Release/net8.0/CentralIdentity.Contracts.dll
+/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Contracts/bin/Release/net8.0/CentralIdentity.Contracts.pdb
+/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Contracts/obj/Release/net8.0/CentralIdentity.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Contracts/obj/Release/net8.0/CentralIdentity.Contracts.AssemblyInfoInputs.cache
+/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Contracts/obj/Release/net8.0/CentralIdentity.Contracts.AssemblyInfo.cs
+/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Contracts/obj/Release/net8.0/CentralIdentity.Contracts.csproj.CoreCompileInputs.cache
+/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Contracts/obj/Release/net8.0/CentralIdentity.Contracts.dll
+/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Contracts/obj/Release/net8.0/refint/CentralIdentity.Contracts.dll
+/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Contracts/obj/Release/net8.0/CentralIdentity.Contracts.pdb
+/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Contracts/obj/Release/net8.0/ref/CentralIdentity.Contracts.dll

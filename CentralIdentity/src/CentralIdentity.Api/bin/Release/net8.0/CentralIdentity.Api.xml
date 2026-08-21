@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CentralIdentity.Api</name>
+    </assembly>
+    <members>
+        <member name="T:CentralIdentity.Api.Controllers.HealthController">
+            <summary>
+            Health check endpoints.
+            </summary>
+        </member>
+        <member name="M:CentralIdentity.Api.Controllers.HealthController.Get(System.Threading.CancellationToken)">
+            <summary>
+            Returns the health status of the API and its dependencies.
+            </summary>
+        </member>
+    </members>
+</doc>

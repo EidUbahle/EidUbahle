@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CentralIdentity.Api/CentralIdentity.Api.csproj" />
+    <Project Path="src/CentralIdentity.Application/CentralIdentity.Application.csproj" />
+    <Project Path="src/CentralIdentity.Contracts/CentralIdentity.Contracts.csproj" />
+    <Project Path="src/CentralIdentity.Domain/CentralIdentity.Domain.csproj" />
+    <Project Path="src/CentralIdentity.Infrastructure/CentralIdentity.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CentralIdentity.IntegrationTests/CentralIdentity.IntegrationTests.csproj" />
+    <Project Path="tests/CentralIdentity.UnitTests/CentralIdentity.UnitTests.csproj" />
+  </Folder>
+</Solution>

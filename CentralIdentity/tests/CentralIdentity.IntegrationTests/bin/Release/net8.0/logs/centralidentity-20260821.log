@@ -1,0 +1,18 @@
+2026-08-21 04:13:49.303 +00:00 [INF] Request starting HTTP/1.1 GET http://localhost/api/health - null null
+2026-08-21 04:13:49.405 +00:00 [WRN] Failed to determine the https port for redirect.
+2026-08-21 04:13:49.410 +00:00 [INF] Executing endpoint 'CentralIdentity.Api.Controllers.HealthController.Get (CentralIdentity.Api)'
+2026-08-21 04:13:49.425 +00:00 [INF] Route matched with {action = "Get", controller = "Health"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get(System.Threading.CancellationToken) on controller CentralIdentity.Api.Controllers.HealthController (CentralIdentity.Api).
+2026-08-21 04:13:49.476 +00:00 [INF] Executing ObjectResult, writing value of type 'CentralIdentity.Contracts.Health.HealthResponse'.
+2026-08-21 04:13:49.496 +00:00 [INF] Executed action CentralIdentity.Api.Controllers.HealthController.Get (CentralIdentity.Api) in 68.4497ms
+2026-08-21 04:13:49.498 +00:00 [INF] Executed endpoint 'CentralIdentity.Api.Controllers.HealthController.Get (CentralIdentity.Api)'
+2026-08-21 04:13:49.499 +00:00 [INF] HTTP GET /api/health responded 200 in 92.3568 ms
+2026-08-21 04:13:49.502 +00:00 [INF] Request finished HTTP/1.1 GET http://localhost/api/health - 200 null application/json; charset=utf-8 201.0456ms
+2026-08-21 04:13:49.579 +00:00 [INF] Request starting HTTP/1.1 GET http://localhost/api/health - null null
+2026-08-21 04:13:49.587 +00:00 [WRN] Failed to determine the https port for redirect.
+2026-08-21 04:13:49.587 +00:00 [INF] Executing endpoint 'CentralIdentity.Api.Controllers.HealthController.Get (CentralIdentity.Api)'
+2026-08-21 04:13:49.591 +00:00 [INF] Route matched with {action = "Get", controller = "Health"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get(System.Threading.CancellationToken) on controller CentralIdentity.Api.Controllers.HealthController (CentralIdentity.Api).
+2026-08-21 04:13:49.592 +00:00 [INF] Executing ObjectResult, writing value of type 'CentralIdentity.Contracts.Health.HealthResponse'.
+2026-08-21 04:13:49.593 +00:00 [INF] Executed action CentralIdentity.Api.Controllers.HealthController.Get (CentralIdentity.Api) in 2.0999ms
+2026-08-21 04:13:49.593 +00:00 [INF] Executed endpoint 'CentralIdentity.Api.Controllers.HealthController.Get (CentralIdentity.Api)'
+2026-08-21 04:13:49.593 +00:00 [INF] HTTP GET /api/health responded 200 in 6.2954 ms
+2026-08-21 04:13:49.593 +00:00 [INF] Request finished HTTP/1.1 GET http://localhost/api/health - 200 null application/json; charset=utf-8 14.1964ms

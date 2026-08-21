@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "Ah6J6HuW2Gc=",
+  "success": true,
+  "projectFilePath": "/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Application/CentralIdentity.Application.csproj",
+  "expectedPackageFiles": [
+    "/home/runner/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.2/microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}
