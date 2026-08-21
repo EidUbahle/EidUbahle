@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CentralIdentity.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8015b7ae0f951b27975cf6065389cb30ad6b942d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fae80f1e2f2f123edf5bce84cb19872854a3043e")]
 [assembly: System.Reflection.AssemblyProductAttribute("CentralIdentity.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CentralIdentity.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

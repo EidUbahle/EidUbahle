@@ -3342,7 +3342,7 @@
     ]
   },
   "packageFolders": {
-    "/home/runner/.nuget/packages/": {}
+    "/tmp/codeql-scratch-b521f0ce3e790663/dbs/csharp/working/packages": {}
   },
   "project": {
     "version": "1.0.0",
@@ -3350,7 +3350,7 @@
       "projectUniqueName": "/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Api/CentralIdentity.Api.csproj",
       "projectName": "CentralIdentity.Api",
       "projectPath": "/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Api/CentralIdentity.Api.csproj",
-      "packagesPath": "/home/runner/.nuget/packages/",
+      "packagesPath": "/tmp/codeql-scratch-b521f0ce3e790663/dbs/csharp/working/packages",
       "outputPath": "/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Api/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
@@ -3428,6 +3428,20 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[8.0.29, 8.0.29]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.linux-x64",
+            "version": "[8.0.29, 8.0.29]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[8.0.29, 8.0.29]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.AspNetCore.App": {
             "privateAssets": "none"

@@ -55,14 +55,22 @@ public static class ServiceCollectionExtensions
         {
             options.AddPolicy("DefaultCors", policy =>
             {
-                if (allowedOrigins.Length == 0)
-                    policy.AllowAnyOrigin();
+                if (allowedOrigins.Length > 0)
+                {
+                    policy
+                        .WithOrigins(allowedOrigins)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                }
                 else
-                    policy.WithOrigins(allowedOrigins);
-
-                policy
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
+                {
+                    // No origins configured — restrict to same-origin only (deny cross-origin).
+                    // Override Cors:AllowedOrigins in configuration for production deployments.
+                    policy
+                        .SetIsOriginAllowed(_ => false)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                }
             });
         });
 

@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "SrbEmuWwwOk=",
+  "dgSpecHash": "X1Rhfl+khsI=",
   "success": true,
   "projectFilePath": "/home/runner/work/EidUbahle/EidUbahle/CentralIdentity/src/CentralIdentity.Domain/CentralIdentity.Domain.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/tmp/codeql-scratch-b521f0ce3e790663/dbs/csharp/working/packages/microsoft.netcore.app.ref/8.0.29/microsoft.netcore.app.ref.8.0.29.nupkg.sha512",
+    "/tmp/codeql-scratch-b521f0ce3e790663/dbs/csharp/working/packages/microsoft.aspnetcore.app.ref/8.0.29/microsoft.aspnetcore.app.ref.8.0.29.nupkg.sha512"
+  ],
   "logs": []
 }

@@ -38,7 +38,7 @@ try
     builder.Services.AddCorsPolicy(builder.Configuration);
 
     // Health Checks
-    builder.Services.AddHealthChecks();
+    builder.Services.AddApplicationHealthChecks();
 
     // Application services (DI)
     builder.Services.AddApiServices(builder.Configuration);
