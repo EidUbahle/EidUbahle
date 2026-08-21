@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CentralIdentity.Api.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Roles = "admin,administrator")]
 public sealed class RolesController : ApiControllerBase
 {
     private readonly IRoleRepository _roleRepo;

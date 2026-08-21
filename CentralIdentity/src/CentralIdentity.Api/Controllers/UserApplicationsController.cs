@@ -2,6 +2,7 @@ using CentralIdentity.Application.Services;
 using CentralIdentity.Contracts.Common;
 using CentralIdentity.Contracts.UserApplications;
 using CentralIdentity.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CentralIdentity.Api.Controllers;
@@ -10,6 +11,7 @@ namespace CentralIdentity.Api.Controllers;
 /// Manages which applications a given user is granted access to.
 /// </summary>
 [Route("api/users/{userId:long}/applications")]
+[Authorize]
 public sealed class UserApplicationsController : ApiControllerBase
 {
     private readonly IUserApplicationService _userApplicationService;
@@ -25,6 +27,9 @@ public sealed class UserApplicationsController : ApiControllerBase
     [ProducesResponseType(typeof(ApiResponse<UserApplicationResponse>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Assign(long userId, [FromBody] AssignUserApplicationRequest request, CancellationToken ct)
     {
+        if (!IsAdministrator)
+            return Forbid();
+
         var result = await _userApplicationService.AssignUserToApplicationAsync(userId, request.ApplicationId, ct);
         if (result.IsFailure)
             return BadRequest(ApiResponse<UserApplicationResponse>.Fail(result.Error!));
@@ -39,6 +44,9 @@ public sealed class UserApplicationsController : ApiControllerBase
     [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<UserApplicationResponse>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetUserApplications(long userId, CancellationToken ct)
     {
+        if (!CanAccessUser(userId))
+            return Forbid();
+
         var result = await _userApplicationService.GetUserApplicationsAsync(userId, ct);
         var response = result.Value.Select(ToResponse).ToList();
         return Ok(ApiResponse<IReadOnlyList<UserApplicationResponse>>.Ok(response));
@@ -50,6 +58,9 @@ public sealed class UserApplicationsController : ApiControllerBase
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Revoke(long userId, long applicationId, [FromBody] RevokeUserApplicationRequest request, CancellationToken ct)
     {
+        if (!IsAdministrator)
+            return Forbid();
+
         var result = await _userApplicationService.RevokeUserApplicationAsync(userId, applicationId, request.Reason, ct);
         if (result.IsFailure)
             return BadRequest(ApiResponse.Fail(result.Error!));

@@ -7,6 +7,7 @@ using CentralIdentity.Application.Common.Interfaces;
 using CentralIdentity.Application.Options;
 using CentralIdentity.Domain.Entities;
 using CentralIdentity.IntegrationTests.Support;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -32,11 +33,12 @@ public class SecurityTests : IClassFixture<WebApplicationFactory<Program>>
         });
     }
 
-    private async Task<(IdentityUser User, IdentityApplication App)> SeedUserAndApplicationAsync()
+    private async Task<(IdentityUser User, IdentityApplication App, IdentitySession Session)> SeedUserAndApplicationAsync()
     {
         var userRepo = _factory.Services.GetRequiredService<IUserRepository>();
         var appRepo = _factory.Services.GetRequiredService<IApplicationRepository>();
         var userAppRepo = _factory.Services.GetRequiredService<IUserApplicationRepository>();
+        var sessionRepo = _factory.Services.GetRequiredService<ISessionRepository>();
 
         var userId = await userRepo.CreateAsync(new IdentityUser
         {
@@ -67,12 +69,50 @@ public class SecurityTests : IClassFixture<WebApplicationFactory<Program>>
             SecurityStamp = "stamp"
         });
 
+        var session = new IdentitySession
+        {
+            SessionId = Guid.NewGuid(),
+            UserId = userId,
+            ApplicationId = appId,
+            ClientId = "ci_sectest",
+            CreatedAtUtc = DateTime.UtcNow,
+            LastActivityAtUtc = DateTime.UtcNow,
+            ExpiresAtUtc = DateTime.UtcNow.AddMinutes(10),
+            SecurityStamp = "stamp",
+            IsActive = true
+        };
+        await sessionRepo.CreateAsync(session, CancellationToken.None);
+
         var user = await userRepo.GetByIdAsync(userId);
         var app = await appRepo.GetByIdAsync(appId);
-        return (user!, app!);
+        return (user!, app!, session);
     }
 
-    private string MintAccessToken(IdentityApplication app, IdentityUser user, bool useValidAudience = true, bool expired = false)
+    private async Task SeedAdminRoleAsync(long userId, long applicationId)
+    {
+        var roleRepo = _factory.Services.GetRequiredService<IRoleRepository>();
+        var userRoleRepo = _factory.Services.GetRequiredService<IUserRoleRepository>();
+
+        var roleId = await roleRepo.CreateAsync(new IdentityRole
+        {
+            ApplicationId = applicationId,
+            RoleCode = "admin",
+            RoleName = "Administrator",
+            IsActive = true,
+            CreatedAtUtc = DateTime.UtcNow
+        }, CancellationToken.None);
+
+        await userRoleRepo.AssignAsync(new IdentityUserRole
+        {
+            UserId = userId,
+            ApplicationId = applicationId,
+            RoleId = roleId,
+            AssignedAtUtc = DateTime.UtcNow,
+            IsActive = true
+        }, CancellationToken.None);
+    }
+
+    private string MintAccessToken(IdentityApplication app, IdentityUser user, IdentitySession session, bool useValidAudience = true, bool expired = false)
     {
         var keyProvider = _factory.Services.GetRequiredService<IJwtKeyProvider>();
         var jwtOptions = _factory.Services.GetRequiredService<IOptions<JwtOptions>>().Value;
@@ -87,7 +127,8 @@ public class SecurityTests : IClassFixture<WebApplicationFactory<Program>>
         {
             new(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
-            new("client_id", app.ClientId)
+            new("client_id", app.ClientId),
+            new("session_id", session.SessionId.ToString())
         };
 
         var rsaKey = new RsaSecurityKey(keyProvider.GetPrivateKey()) { KeyId = keyProvider.KeyId };
@@ -121,8 +162,8 @@ public class SecurityTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task GET_userinfo_with_valid_token_returns_200_with_user_claims()
     {
-        var (user, app) = await SeedUserAndApplicationAsync();
-        var token = MintAccessToken(app, user);
+        var (user, app, session) = await SeedUserAndApplicationAsync();
+        var token = MintAccessToken(app, user, session);
         var client = _factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -137,8 +178,8 @@ public class SecurityTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task GET_userinfo_with_tampered_token_returns_401()
     {
-        var (user, app) = await SeedUserAndApplicationAsync();
-        var token = MintAccessToken(app, user);
+        var (user, app, session) = await SeedUserAndApplicationAsync();
+        var token = MintAccessToken(app, user, session);
         var tamperedToken = token[..^2] + (token[^2] == 'A' ? "BB" : "AA");
 
         var client = _factory.CreateClient();
@@ -152,8 +193,8 @@ public class SecurityTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task GET_userinfo_with_expired_token_returns_401()
     {
-        var (user, app) = await SeedUserAndApplicationAsync();
-        var expiredToken = MintAccessToken(app, user, expired: true);
+        var (user, app, session) = await SeedUserAndApplicationAsync();
+        var expiredToken = MintAccessToken(app, user, session, expired: true);
 
         var client = _factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", expiredToken);
@@ -166,8 +207,8 @@ public class SecurityTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task GET_userinfo_with_wrong_audience_returns_401()
     {
-        var (user, app) = await SeedUserAndApplicationAsync();
-        var wrongAudienceToken = MintAccessToken(app, user, useValidAudience: false);
+        var (user, app, session) = await SeedUserAndApplicationAsync();
+        var wrongAudienceToken = MintAccessToken(app, user, session, useValidAudience: false);
 
         var client = _factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", wrongAudienceToken);
@@ -186,5 +227,110 @@ public class SecurityTests : IClassFixture<WebApplicationFactory<Program>>
         var response = await client.GetAsync("/connect/userinfo");
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GET_userinfo_with_revoked_session_returns_401()
+    {
+        var (user, app, session) = await SeedUserAndApplicationAsync();
+        var sessionRepo = _factory.Services.GetRequiredService<ISessionRepository>();
+        await sessionRepo.RevokeAsync(session.SessionId, "test", CancellationToken.None);
+
+        var token = MintAccessToken(app, user, session);
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await client.GetAsync("/connect/userinfo");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GET_users_without_token_returns_401()
+    {
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/api/users");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GET_users_with_non_admin_token_returns_403()
+    {
+        var (user, app, session) = await SeedUserAndApplicationAsync();
+        var token = MintAccessToken(app, user, session);
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await client.GetAsync("/api/users");
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GET_users_with_admin_token_returns_200()
+    {
+        var (user, app, session) = await SeedUserAndApplicationAsync();
+        await SeedAdminRoleAsync(user.UserId, app.ApplicationId);
+
+        var token = MintAccessToken(app, user, session);
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await client.GetAsync("/api/users");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GET_authorize_in_production_rejects_query_user_shortcut()
+    {
+        var productionFactory = _factory.WithWebHostBuilder(builder =>
+        {
+            builder.UseEnvironment("Production");
+            builder.ConfigureServices(services => services.ReplaceRepositoriesWithFakes());
+        });
+
+        var userRepo = productionFactory.Services.GetRequiredService<IUserRepository>();
+        var appRepo = productionFactory.Services.GetRequiredService<IApplicationRepository>();
+        var userAppRepo = productionFactory.Services.GetRequiredService<IUserApplicationRepository>();
+
+        var userId = await userRepo.CreateAsync(new IdentityUser
+        {
+            Username = "prod-user",
+            Email = "prod-user@example.com",
+            PasswordHash = "hash",
+            FirstName = "Prod",
+            LastName = "User",
+            IsActive = true,
+            SecurityStamp = "stamp"
+        });
+
+        var appId = await appRepo.CreateAsync(new IdentityApplication
+        {
+            ApplicationCode = "PRODTEST",
+            ApplicationName = "Production Test App",
+            ClientId = "ci_prodtest",
+            ClientType = "Public",
+            Audience = "https://prodtest.example.com",
+            AllowedRedirectUris = "https://client.example.com/callback",
+            IsActive = true
+        });
+
+        await userAppRepo.AssignAsync(new IdentityUserApplication
+        {
+            UserId = userId,
+            ApplicationId = appId,
+            IsActive = true,
+            SecurityStamp = "stamp"
+        });
+
+        var client = productionFactory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        var response = await client.GetAsync("/connect/authorize?response_type=code&client_id=ci_prodtest&redirect_uri=https://client.example.com/callback&user_id=1");
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
+        Assert.Equal("login_required", body.GetProperty("error").GetString());
     }
 }

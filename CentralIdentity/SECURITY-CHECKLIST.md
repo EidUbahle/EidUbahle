@@ -9,7 +9,7 @@ Central Identity & Authentication Platform
 
 ## Authentication & Authorization
 - [ ] Client secrets hashed (PBKDF2)
-- [ ] Passwords hashed (PBKDF2, 100,000 iterations)
+- [ ] Passwords hashed (PBKDF2, 310,000 iterations)
 - [ ] Refresh tokens hashed (SHA-256)
 - [ ] Signing private key protected (not in repository)
 - [ ] JWKS exposes public keys only
@@ -31,7 +31,7 @@ Central Identity & Authentication Platform
 - [ ] Rate limiting enabled on login/token/MFA endpoints
 - [ ] Account lockout enabled (default: 5 attempts, 15 min)
 - [ ] MFA available (TOTP)
-- [ ] MFA secret encrypted at rest (AES-256)
+- [ ] MFA secret encrypted at rest (AES-256 / AES-GCM)
 - [ ] Recovery codes hashed (SHA-256)
 
 ## Operational Security

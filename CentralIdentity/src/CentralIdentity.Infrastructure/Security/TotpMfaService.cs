@@ -19,7 +19,7 @@ public sealed class TotpMfaService : IMfaService
 
         if (string.IsNullOrWhiteSpace(keyStr))
         {
-            _encryptionKey = SHA256.HashData(Encoding.UTF8.GetBytes(_issuer + "_mfa_key"));
+            _encryptionKey = RandomNumberGenerator.GetBytes(32);
         }
         else
         {
@@ -84,29 +84,28 @@ public sealed class TotpMfaService : IMfaService
 
     public string EncryptSecret(string plaintext)
     {
-        var iv = RandomNumberGenerator.GetBytes(16);
-        using var aes = Aes.Create();
-        aes.Key = _encryptionKey;
-        aes.IV = iv;
-        using var encryptor = aes.CreateEncryptor();
+        var nonce = RandomNumberGenerator.GetBytes(12);
+        var tag = new byte[16];
         var data = Encoding.UTF8.GetBytes(plaintext);
-        var encrypted = encryptor.TransformFinalBlock(data, 0, data.Length);
-        var result = new byte[iv.Length + encrypted.Length];
-        iv.CopyTo(result, 0);
-        encrypted.CopyTo(result, iv.Length);
+        var encrypted = new byte[data.Length];
+        using var aes = new AesGcm(_encryptionKey, tag.Length);
+        aes.Encrypt(nonce, data, encrypted, tag);
+        var result = new byte[nonce.Length + tag.Length + encrypted.Length];
+        nonce.CopyTo(result, 0);
+        tag.CopyTo(result, nonce.Length);
+        encrypted.CopyTo(result, nonce.Length + tag.Length);
         return Convert.ToBase64String(result);
     }
 
     public string DecryptSecret(string ciphertext)
     {
         var raw = Convert.FromBase64String(ciphertext);
-        var iv = raw[..16];
-        var encrypted = raw[16..];
-        using var aes = Aes.Create();
-        aes.Key = _encryptionKey;
-        aes.IV = iv;
-        using var decryptor = aes.CreateDecryptor();
-        var decrypted = decryptor.TransformFinalBlock(encrypted, 0, encrypted.Length);
+        var nonce = raw[..12];
+        var tag = raw[12..28];
+        var encrypted = raw[28..];
+        var decrypted = new byte[encrypted.Length];
+        using var aes = new AesGcm(_encryptionKey, tag.Length);
+        aes.Decrypt(nonce, encrypted, tag, decrypted);
         return Encoding.UTF8.GetString(decrypted);
     }
 }

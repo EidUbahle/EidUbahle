@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CentralIdentity.Api.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Roles = "admin,administrator")]
 public sealed class PermissionsController : ApiControllerBase
 {
     private readonly IPermissionRepository _permRepo;

@@ -2,6 +2,7 @@ using CentralIdentity.Application.Services;
 using CentralIdentity.Contracts.Common;
 using CentralIdentity.Contracts.Users;
 using CentralIdentity.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CentralIdentity.Api.Controllers;
@@ -10,6 +11,7 @@ namespace CentralIdentity.Api.Controllers;
 /// User management endpoints.
 /// </summary>
 [Route("api/users")]
+[Authorize]
 public sealed class UsersController : ApiControllerBase
 {
     private readonly IUserService _userService;
@@ -25,6 +27,9 @@ public sealed class UsersController : ApiControllerBase
     [ProducesResponseType(typeof(ApiResponse<UserResponse>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] UserCreateRequest request, CancellationToken ct)
     {
+        if (!IsAdministrator)
+            return Forbid();
+
         var result = await _userService.CreateUserAsync(new CreateUserCommand(
             request.Username, request.Email, request.Phone, request.Password, request.FirstName, request.LastName), ct);
 
@@ -41,6 +46,9 @@ public sealed class UsersController : ApiControllerBase
     [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<UserResponse>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
     {
+        if (!IsAdministrator)
+            return Forbid();
+
         var result = await _userService.GetUsersAsync(page, pageSize, ct);
         var response = result.Value.Select(ToResponse).ToList();
         return Ok(ApiResponse<IReadOnlyList<UserResponse>>.Ok(response));
@@ -52,6 +60,9 @@ public sealed class UsersController : ApiControllerBase
     [ProducesResponseType(typeof(ApiResponse<UserResponse>), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(long id, CancellationToken ct)
     {
+        if (!CanAccessUser(id))
+            return Forbid();
+
         var result = await _userService.GetUserAsync(id, ct);
         if (result.IsFailure)
             return NotFound(ApiResponse<UserResponse>.Fail(result.Error!));
@@ -64,6 +75,9 @@ public sealed class UsersController : ApiControllerBase
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update(long id, [FromBody] UserUpdateRequest request, CancellationToken ct)
     {
+        if (!CanAccessUser(id))
+            return Forbid();
+
         var result = await _userService.UpdateUserAsync(new UpdateUserCommand(id, request.Phone, request.FirstName, request.LastName), ct);
         if (result.IsFailure)
             return BadRequest(ApiResponse.Fail(result.Error!));
@@ -76,6 +90,9 @@ public sealed class UsersController : ApiControllerBase
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Enable(long id, CancellationToken ct)
     {
+        if (!IsAdministrator)
+            return Forbid();
+
         var result = await _userService.EnableUserAsync(id, ct);
         if (result.IsFailure)
             return BadRequest(ApiResponse.Fail(result.Error!));
@@ -88,6 +105,9 @@ public sealed class UsersController : ApiControllerBase
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Disable(long id, CancellationToken ct)
     {
+        if (!IsAdministrator)
+            return Forbid();
+
         var result = await _userService.DisableUserAsync(id, ct);
         if (result.IsFailure)
             return BadRequest(ApiResponse.Fail(result.Error!));

@@ -3,6 +3,7 @@ using CentralIdentity.Contracts.Applications;
 using CentralIdentity.Contracts.Common;
 using CentralIdentity.Contracts.UserApplications;
 using CentralIdentity.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CentralIdentity.Api.Controllers;
@@ -11,6 +12,7 @@ namespace CentralIdentity.Api.Controllers;
 /// OAuth client application registration and management endpoints.
 /// </summary>
 [Route("api/applications")]
+[Authorize(Roles = "admin,administrator")]
 public sealed class ApplicationsController : ApiControllerBase
 {
     private readonly IApplicationService _applicationService;

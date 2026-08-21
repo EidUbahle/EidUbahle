@@ -27,6 +27,7 @@ public sealed class ConnectController : ControllerBase
     private readonly IClientSecretHasher _clientSecretHasher;
     private readonly OAuthOptions _oauthOptions;
     private readonly JwtOptions _jwtOptions;
+    private readonly IHostEnvironment _hostEnvironment;
     private readonly ILogger<ConnectController> _logger;
 
     public ConnectController(
@@ -38,6 +39,7 @@ public sealed class ConnectController : ControllerBase
         IClientSecretHasher clientSecretHasher,
         IOptions<OAuthOptions> oauthOptions,
         IOptions<JwtOptions> jwtOptions,
+        IHostEnvironment hostEnvironment,
         ILogger<ConnectController> logger)
     {
         _appRepo = appRepo;
@@ -48,6 +50,7 @@ public sealed class ConnectController : ControllerBase
         _clientSecretHasher = clientSecretHasher;
         _oauthOptions = oauthOptions.Value;
         _jwtOptions = jwtOptions.Value;
+        _hostEnvironment = hostEnvironment;
         _logger = logger;
     }
 
@@ -73,8 +76,25 @@ public sealed class ConnectController : ControllerBase
         if (string.IsNullOrWhiteSpace(redirectUri))
             return BadRequest(new OAuthErrorResponse { Error = "invalid_request", ErrorDescription = "redirect_uri is required." });
 
-        if (userId is null)
-            return BadRequest(new OAuthErrorResponse { Error = "login_required", ErrorDescription = "user_id is required (no active session)." });
+        var authenticatedUserId = TryGetAuthenticatedUserId();
+        var effectiveUserId = authenticatedUserId;
+
+        if (authenticatedUserId.HasValue)
+        {
+            if (userId.HasValue && userId.Value != authenticatedUserId.Value)
+                return BadRequest(new OAuthErrorResponse { Error = "invalid_request", ErrorDescription = "user_id must match the authenticated user." });
+        }
+        else if (_hostEnvironment.IsDevelopment() || _hostEnvironment.IsEnvironment("Testing"))
+        {
+            if (userId is null)
+                return BadRequest(new OAuthErrorResponse { Error = "login_required", ErrorDescription = "user_id is required when no authenticated user is present." });
+
+            effectiveUserId = userId.Value;
+        }
+        else
+        {
+            return BadRequest(new OAuthErrorResponse { Error = "login_required", ErrorDescription = "An authenticated user session is required." });
+        }
 
         var app = await _appRepo.GetByClientIdAsync(clientId, ct);
         if (app is null || !app.IsActive)
@@ -83,7 +103,7 @@ public sealed class ConnectController : ControllerBase
         if (!app.GetRedirectUris().Contains(redirectUri, StringComparer.Ordinal))
             return BadRequest(new OAuthErrorResponse { Error = "invalid_request", ErrorDescription = "redirect_uri is not registered for this client." });
 
-        var user = await _userRepo.GetByIdAsync(userId.Value, ct);
+        var user = await _userRepo.GetByIdAsync(effectiveUserId!.Value, ct);
         if (user is null || !user.IsActive)
             return BadRequest(new OAuthErrorResponse { Error = "access_denied", ErrorDescription = "User is unknown or inactive." });
 
@@ -333,6 +353,18 @@ public sealed class ConnectController : ControllerBase
 
     private string? GetIpAddress() => HttpContext.Connection.RemoteIpAddress?.ToString();
     private string? GetUserAgent() => Request.Headers.UserAgent.Count == 0 ? null : Request.Headers.UserAgent.ToString();
+
+    private long? TryGetAuthenticatedUserId()
+    {
+        if (User.Identity?.IsAuthenticated != true)
+            return null;
+
+        var subject = User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+            ?? User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? User.FindFirstValue("sub");
+
+        return long.TryParse(subject, out var userId) ? userId : null;
+    }
 
     private static string? ReadSessionId(string accessToken)
     {

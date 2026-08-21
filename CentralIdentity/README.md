@@ -1,30 +1,38 @@
 # Central Identity & Authentication Platform
 
-CentralIdentity is a production-oriented ASP.NET Core 8 platform for centralized authentication, authorization, session management, and application-scoped access control across multiple client systems such as University, Hospital, and Tax applications.
+## Project overview
 
-## Platform Overview
+CentralIdentity is an ASP.NET Core 8 identity platform for centralized authentication, OAuth 2.0/OpenID Connect-style token issuance, application-scoped authorization, session management, RBAC, MFA, audit logging, and inactivity enforcement across multiple client systems.
 
-The platform provides:
+## Requirements
 
-- OAuth 2.0 / OpenID Connect-style authorization code flow with mandatory PKCE
-- RS256 JWT access tokens with JWKS discovery
-- Refresh token rotation and reuse detection
-- Per-application user assignments and session isolation
-- Roles and permissions
-- TOTP MFA with encrypted secrets and hashed recovery codes
-- Audit logging, rate limiting, security headers, and inactivity enforcement
+### SDK
 
-## Solution Structure
+- .NET SDK 8.x
+
+### Database
+
+- Microsoft SQL Server
+- Run the SQL scripts in `database/migrations/` in order
+- Optional reference data: `database/seeds/001_Initial_Data.sql`
+
+### External services
+
+- No third-party hosted identity dependency is required
+- A persistent RSA private key file is required for production token signing
+- A 32-byte Base64 MFA encryption key is required for durable MFA secret storage in production
+
+## Solution structure
 
 ```text
 CentralIdentity/
 ├── CentralIdentity.slnx
 ├── src/
-│   ├── CentralIdentity.Api/
-│   ├── CentralIdentity.Application/
-│   ├── CentralIdentity.Contracts/
-│   ├── CentralIdentity.Domain/
-│   └── CentralIdentity.Infrastructure/
+│   ├── CentralIdentity.Api/             # HTTP API, middleware, auth, rate limiting, hosted services
+│   ├── CentralIdentity.Application/     # Use-case services and option binding
+│   ├── CentralIdentity.Contracts/       # Request/response DTOs
+│   ├── CentralIdentity.Domain/          # Entities, results, domain exceptions
+│   └── CentralIdentity.Infrastructure/  # SQL repositories, hashing, JWT keys, MFA crypto
 ├── tests/
 │   ├── CentralIdentity.UnitTests/
 │   └── CentralIdentity.IntegrationTests/
@@ -34,189 +42,105 @@ CentralIdentity/
 │   └── seeds/
 ├── docs/
 ├── deployment/
-├── SECURITY-CHECKLIST.md
-└── README.md
-```
-
-## Architecture
-
-The solution follows Clean Architecture:
-
-- **API**: HTTP endpoints, middleware, rate limiting, health checks, Swagger, hosted services
-- **Application**: use-case services and interfaces
-- **Domain**: entities and core business rules
-- **Infrastructure**: SQL Server repositories, cryptography, key loading, and external integrations
-- **Contracts**: API DTOs
-
-More detail: `docs/ARCHITECTURE.md`
-
-## OAuth2 / OIDC Flows
-
-Supported flows:
-
-- **authorization_code + PKCE** for web and mobile clients
-- **refresh_token** for renewing access without reauthentication
-
-Main endpoints:
-
-- `GET /.well-known/openid-configuration`
-- `GET /.well-known/jwks.json`
-- `GET /connect/authorize`
-- `POST /connect/token`
-- `POST /connect/revoke`
-- `GET /connect/userinfo`
-
-Flow detail: `docs/AUTHENTICATION-FLOW.md`
-
-## JWT / JWKS
-
-- Access tokens are signed with **RS256**
-- Issuer is configured under `Jwt:Issuer`
-- Public keys are published through JWKS
-- Private key material stays outside source control
-- Token validation includes issuer, audience, signature, and lifetime
-
-## Refresh Tokens & Sessions
-
-- Refresh tokens are application-scoped and session-bound
-- Rotation occurs on every successful refresh
-- Reuse detection revokes the entire token family and session
-- Logout and explicit revocation invalidate server-side sessions and their refresh tokens
-
-Lifecycle detail: `docs/TOKEN-LIFECYCLE.md`
-
-## Application-Scoped Authorization
-
-Each user is assigned to one or more applications through `IdentityUserApplication`.
-
-This enables:
-
-- access for one user across multiple client applications
-- isolated revocation per application
-- per-application inactivity enforcement
-- token/session isolation between applications
-
-Example:
-
-- Revoking Hospital access does **not** revoke University or Tax access
-- University refresh tokens cannot be reused for Hospital sessions
-
-## Roles & Permissions
-
-The platform includes role and permission data models and repositories for:
-
-- creating roles
-- assigning roles to users
-- attaching permissions to roles
-- resolving effective access per user
-
-This supports centralized authorization beyond basic authentication.
-
-## MFA
-
-MFA support includes:
-
-- TOTP setup and verification
-- encrypted MFA secret storage
-- hashed recovery codes
-- MFA enable/disable and regeneration flows
-
-Integration guidance: `docs/MAUI-INTEGRATION.md` and `docs/CLIENT-INTEGRATION.md`
-
-## 7-Day Inactivity Enforcement
-
-A hosted background service scans active user/application assignments and revokes any assignment inactive for longer than the configured threshold:
-
-- default threshold: **7 days**
-- configurable batch size and interval
-- revocation is **per application**, not global per user
-
-## Security Features
-
-- PBKDF2 password hashing (**310,000** iterations, SHA-512)
-- PBKDF2 client secret hashing (**100,000** iterations, SHA-256)
-- hashed refresh tokens
-- RS256 asymmetric token signing
-- exact redirect URI matching
-- mandatory PKCE
-- rate limiting for login, token, and MFA endpoints
-- HSTS in production
-- CORS allow-listing
-- secure response headers
-- global exception handling
-- audit logging of security events
-
-Checklist: `SECURITY-CHECKLIST.md`
-
-## Testing
-
-Test projects:
-
-- `tests/CentralIdentity.UnitTests`
-- `tests/CentralIdentity.IntegrationTests`
-
-Coverage areas include:
-
-- password and client secret hashing
-- PKCE and authorization code validation
-- JWT generation and validation
-- refresh token rotation and reuse protection
-- RBAC
-- MFA
-- security headers and protected endpoints
-- inactivity enforcement
-- end-to-end phase validation
-
-Run locally:
-
-```bash
-cd CentralIdentity
-dotnet build
-dotnet test --no-build
+└── SECURITY-CHECKLIST.md
 ```
 
 ## Configuration
 
-Use `src/CentralIdentity.Api/appsettings.example.json` as the production template.
+Use `src/CentralIdentity.Api/appsettings.example.json` as the template. Do not commit production secrets.
 
-Important sections:
+### Required configuration sections
 
 - `ConnectionStrings:DefaultConnection`
-- `Jwt`
-- `OAuth`
-- `Security`
-- `Cors`
-- `Serilog`
+- `Jwt:Issuer`
+- `Jwt:SigningKeyId`
+- `Jwt:RsaPrivateKeyPemFile`
+- `OAuth:AuthorizationCodeLifetimeMinutes`
+- `Security:ApplicationInactivityDays`
+- `Security:MaxFailedLoginAttempts`
+- `Security:LockoutMinutes`
+- `Security:MfaEncryptionKey`
+- `Cors:AllowedOrigins`
 
-Do not commit production secrets, RSA private keys, certificates, or environment-specific appsettings files.
+### Environment variables / secret guidance
 
-## Database
+Recommended production overrides:
 
-- migration scripts live under `database/migrations/`
-- schema notes live under `database/schemas/`
-- reference data scripts live under `database/seeds/`
+- `ConnectionStrings__DefaultConnection`
+- `Jwt__Issuer`
+- `Jwt__SigningKeyId`
+- `Jwt__RsaPrivateKeyPemFile`
+- `Security__MfaEncryptionKey`
+- `Cors__AllowedOrigins__0`, `Cors__AllowedOrigins__1`, ...
 
-Start with:
+### Secrets rules
 
-- `database/schemas/README.md`
-- `database/seeds/001_Initial_Data.sql`
+- Never store real connection strings, private keys, certificates, client secrets, or MFA encryption keys in source control
+- Keep the RSA private key outside the repository
+- Generate `Security:MfaEncryptionKey` as a 32-byte Base64 value
 
-## Client Integration
-
-- ASP.NET Core Razor Pages guidance: `docs/CLIENT-INTEGRATION.md`
-- .NET MAUI guidance: `docs/MAUI-INTEGRATION.md`
-
-## Deployment
-
-- deployment overview: `docs/DEPLOYMENT.md`
-- IIS procedure: `deployment/IIS-DEPLOYMENT.md`
-
-## Getting Started
+## Build commands
 
 ```bash
 cd CentralIdentity
 dotnet restore
-dotnet build
-dotnet test --no-build
-dotnet run --project src/CentralIdentity.Api
+dotnet build --no-restore
 ```
+
+## Test commands
+
+```bash
+cd CentralIdentity
+dotnet test
+```
+
+Security/package audit commands used during finalization:
+
+```bash
+dotnet list CentralIdentity.slnx package --vulnerable --include-transitive
+```
+
+## Security controls
+
+- RS256 JWT signing with JWKS exposure of the public key only
+- PKCE enforced for authorization-code flow
+- Exact redirect URI matching
+- Per-request bearer-token validation of issuer, signature, lifetime, audience, user/application assignment, active session, and security stamp
+- Application management endpoints locked behind authenticated administrator access
+- Self-service profile access limited to the owning user or an administrator
+- PBKDF2-HMAC-SHA512 password hashing (310,000 iterations)
+- PBKDF2-HMAC-SHA256 client secret hashing (100,000 iterations)
+- Refresh-token hashing, rotation, family reuse detection, and session revocation
+- TOTP MFA with AES-GCM encrypted secret storage and hashed recovery codes
+- Rate limiting for login, token, and MFA endpoints
+- HSTS in production, CORS allow-listing, and hardened security headers
+- Audit logging for security-sensitive events without logging secrets or tokens
+- Per-application inactivity revocation worker
+
+## Deployment instructions
+
+1. Provision SQL Server and apply `database/migrations/V001__Create_Database.sql` through `V006__MFA.sql`
+2. Populate `appsettings` via environment variables or secret store
+3. Provide a persistent RSA private key file for `Jwt:RsaPrivateKeyPemFile`
+4. Provide a 32-byte Base64 `Security:MfaEncryptionKey`
+5. Set explicit `Cors:AllowedOrigins`
+6. Publish and deploy the API:
+
+```bash
+cd CentralIdentity
+dotnet publish src/CentralIdentity.Api -c Release -o publish
+```
+
+Additional deployment guidance:
+
+- `docs/DEPLOYMENT.md`
+- `deployment/IIS-DEPLOYMENT.md`
+
+## Troubleshooting
+
+- **NETSDK1064 during `dotnet clean`**: remove stale `bin/` and `obj/` directories, then run `dotnet restore`
+- **401 on protected endpoints**: verify issuer, RSA signing key, audience, active session, and user/application assignment
+- **403 on management endpoints**: the token must resolve to an administrator role for the target application
+- **MFA decryption failures after restart**: ensure `Security:MfaEncryptionKey` is configured and stable across deployments
+- **Redirect URI rejected**: confirm the URI exactly matches the registered value
+- **Cross-origin calls blocked**: populate `Cors:AllowedOrigins` with the precise client origins
