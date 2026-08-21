@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CentralIdentity.IntegrationTests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7de56d89649238bbe100015c29b841be8cd9b657")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bf9861b02ac3d6a6e29c4b9f8dabae84a7e76f0f")]
 [assembly: System.Reflection.AssemblyProductAttribute("CentralIdentity.IntegrationTests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CentralIdentity.IntegrationTests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

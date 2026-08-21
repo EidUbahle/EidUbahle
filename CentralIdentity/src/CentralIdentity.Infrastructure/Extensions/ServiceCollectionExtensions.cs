@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
 
         // Security
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
-        services.AddSingleton<IClientSecretHasher, HmacClientSecretHasher>();
+        services.AddSingleton<IClientSecretHasher, Pbkdf2ClientSecretHasher>();
         services.AddSingleton<IJwtKeyProvider, RsaJwtKeyProvider>();
         services.AddSingleton<IAccessTokenService, JwtAccessTokenService>();
 

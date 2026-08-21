@@ -11,7 +11,7 @@ public class ApplicationServiceTests
     private static ApplicationService CreateService(out FakeApplicationRepository repo)
     {
         repo = new FakeApplicationRepository();
-        return new ApplicationService(repo, new HmacClientSecretHasher(), NullLogger<ApplicationService>.Instance);
+        return new ApplicationService(repo, new Pbkdf2ClientSecretHasher(), NullLogger<ApplicationService>.Instance);
     }
 
     [Fact]

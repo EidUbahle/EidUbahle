@@ -45,7 +45,9 @@ public sealed class WellKnownController : ControllerBase
     [ProducesResponseType(typeof(JsonWebKeySetResponse), StatusCodes.Status200OK)]
     public IActionResult GetJwks()
     {
-        using var publicKey = _keyProvider.GetPublicKey();
+        // Note: GetPublicKey() returns an instance owned by IJwtKeyProvider — it must not be
+        // disposed here.
+        var publicKey = _keyProvider.GetPublicKey();
         var parameters = publicKey.ExportParameters(includePrivateParameters: false);
 
         var jwk = new JsonWebKey

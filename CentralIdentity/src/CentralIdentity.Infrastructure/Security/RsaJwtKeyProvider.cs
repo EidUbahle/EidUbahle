@@ -15,6 +15,7 @@ namespace CentralIdentity.Infrastructure.Security;
 public sealed class RsaJwtKeyProvider : IJwtKeyProvider, IDisposable
 {
     private readonly RSA _rsa;
+    private readonly RSA _publicKeyOnly;
     private readonly JwtOptions _options;
     private readonly ILogger<RsaJwtKeyProvider> _logger;
 
@@ -23,6 +24,13 @@ public sealed class RsaJwtKeyProvider : IJwtKeyProvider, IDisposable
         _options = options.Value;
         _logger = logger;
         _rsa = LoadOrGenerateKey();
+
+        // Cache a single public-key-only RSA instance owned by this provider (disposed together
+        // with it) rather than allocating a new one on every GetPublicKey() call, which would
+        // otherwise leak an undisposed RSA handle each time a caller (e.g. JWT bearer middleware
+        // configuration at startup) does not itself dispose the returned instance.
+        _publicKeyOnly = RSA.Create();
+        _publicKeyOnly.ImportParameters(_rsa.ExportParameters(includePrivateParameters: false));
     }
 
     public string KeyId => _options.SigningKeyId;
@@ -32,15 +40,11 @@ public sealed class RsaJwtKeyProvider : IJwtKeyProvider, IDisposable
     public RSA GetPrivateKey() => _rsa;
 
     /// <summary>
-    /// Returns a fresh RSA instance containing only the public key parameters, safe to
-    /// expose via JWKS or any other external-facing surface.
+    /// Returns the RSA instance containing only the public key parameters, safe to expose via
+    /// JWKS or any other external-facing surface. This instance is owned by the provider and
+    /// disposed together with it — callers must NOT dispose the returned <see cref="RSA"/>.
     /// </summary>
-    public RSA GetPublicKey()
-    {
-        var publicOnly = RSA.Create();
-        publicOnly.ImportParameters(_rsa.ExportParameters(includePrivateParameters: false));
-        return publicOnly;
-    }
+    public RSA GetPublicKey() => _publicKeyOnly;
 
     private RSA LoadOrGenerateKey()
     {
@@ -84,5 +88,9 @@ public sealed class RsaJwtKeyProvider : IJwtKeyProvider, IDisposable
         return generated;
     }
 
-    public void Dispose() => _rsa.Dispose();
+    public void Dispose()
+    {
+        _rsa.Dispose();
+        _publicKeyOnly.Dispose();
+    }
 }

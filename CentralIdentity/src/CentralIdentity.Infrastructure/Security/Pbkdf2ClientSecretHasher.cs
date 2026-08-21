@@ -12,7 +12,7 @@ namespace CentralIdentity.Infrastructure.Security;
 /// or reused as a lookup key.
 /// Stored format: v1$&lt;base64 salt&gt;$&lt;base64 hash&gt;$&lt;iterations&gt;
 /// </summary>
-public sealed class HmacClientSecretHasher : IClientSecretHasher
+public sealed class Pbkdf2ClientSecretHasher : IClientSecretHasher
 {
     private const int Iterations = 100_000;
     private const int SaltSize = 16;

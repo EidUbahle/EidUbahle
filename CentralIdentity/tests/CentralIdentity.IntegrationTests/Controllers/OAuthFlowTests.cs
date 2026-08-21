@@ -243,9 +243,9 @@ public class OAuthFlowTests : IClassFixture<WebApplicationFactory<Program>>
             ["client_secret"] = string.Empty,
             ["code_verifier"] = "correct-verifier-value-1234567890"
         });
-        var tokenResponse2 = await client.PostAsync("/connect/token", tokenForm);
+        var tokenResponse = await client.PostAsync("/connect/token", tokenForm);
 
-        Assert.Equal(HttpStatusCode.Unauthorized, tokenResponse2.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, tokenResponse.StatusCode);
     }
 
     [Fact]

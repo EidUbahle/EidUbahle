@@ -5,7 +5,7 @@ namespace CentralIdentity.UnitTests.Phase2;
 
 public class ClientSecretHasherTests
 {
-    private readonly HmacClientSecretHasher _hasher = new();
+    private readonly Pbkdf2ClientSecretHasher _hasher = new();
 
     [Fact]
     public void HashSecret_ProducesNonPlaintextHash()
