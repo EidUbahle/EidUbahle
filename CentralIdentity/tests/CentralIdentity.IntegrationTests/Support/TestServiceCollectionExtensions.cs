@@ -26,5 +26,14 @@ public static class TestServiceCollectionExtensions
 
         services.RemoveAll<IAuthorizationCodeRepository>();
         services.AddSingleton<IAuthorizationCodeRepository, FakeAuthorizationCodeRepository>();
+
+        services.RemoveAll<IRefreshTokenRepository>();
+        services.AddSingleton<IRefreshTokenRepository, FakeRefreshTokenRepository>();
+
+        services.RemoveAll<ISessionRepository>();
+        services.AddSingleton<ISessionRepository, FakeSessionRepository>();
+
+        services.RemoveAll<IAuditLogRepository>();
+        services.AddSingleton<IAuditLogRepository, FakeAuditLogRepository>();
     }
 }

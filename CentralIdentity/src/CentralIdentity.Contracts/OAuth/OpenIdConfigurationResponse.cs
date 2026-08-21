@@ -33,7 +33,7 @@ public sealed class OpenIdConfigurationResponse
     public string[] CodeChallengeMethodsSupported { get; set; } = { "S256" };
 
     [JsonPropertyName("grant_types_supported")]
-    public string[] GrantTypesSupported { get; set; } = { "authorization_code" };
+    public string[] GrantTypesSupported { get; set; } = { "authorization_code", "refresh_token" };
 
     [JsonPropertyName("scopes_supported")]
     public string[] ScopesSupported { get; set; } = { "openid", "profile", "email" };

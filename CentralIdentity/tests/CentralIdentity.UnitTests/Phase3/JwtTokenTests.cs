@@ -12,6 +12,8 @@ namespace CentralIdentity.UnitTests.Phase3;
 
 public class JwtTokenTests
 {
+    private static readonly Guid TestSessionId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+
     private static (RsaJwtKeyProvider KeyProvider, JwtAccessTokenService TokenService, JwtOptions Options) CreateSut(
         int accessTokenLifetimeMinutes = 10)
     {
@@ -19,6 +21,7 @@ public class JwtTokenTests
         {
             Issuer = "https://identity.example.com",
             AccessTokenLifetimeMinutes = accessTokenLifetimeMinutes,
+            RefreshTokenLifetimeDays = 30,
             SigningKeyId = "test-key-1",
             SigningAlgorithm = "RS256",
             RsaPrivateKeyPemFile = string.Empty
@@ -55,7 +58,7 @@ public class JwtTokenTests
     {
         var (_, tokenService, _) = CreateSut();
 
-        var token = tokenService.CreateAccessToken(TestUser(), TestApplication(), new[] { "profile" });
+        var token = tokenService.CreateAccessToken(TestUser(), TestApplication(), new[] { "profile" }, TestSessionId);
         var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
         Assert.Equal(SecurityAlgorithms.RsaSha256, jwt.Header.Alg);
@@ -68,13 +71,14 @@ public class JwtTokenTests
         var user = TestUser();
         var app = TestApplication();
 
-        var token = tokenService.CreateAccessToken(user, app, new[] { "profile", "email" });
+        var token = tokenService.CreateAccessToken(user, app, new[] { "profile", "email" }, TestSessionId);
         var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
         Assert.Equal(user.UserId.ToString(), jwt.Subject);
         Assert.Equal("https://identity.example.com", jwt.Issuer);
         Assert.Contains(app.Audience, jwt.Audiences);
         Assert.Equal(app.ClientId, jwt.Claims.Single(c => c.Type == "client_id").Value);
+        Assert.Equal(TestSessionId.ToString(), jwt.Claims.Single(c => c.Type == "session_id").Value);
         Assert.Contains(jwt.Claims, c => c.Type == "scope" && c.Value == "profile");
         Assert.Contains(jwt.Claims, c => c.Type == "scope" && c.Value == "email");
     }
@@ -84,7 +88,7 @@ public class JwtTokenTests
     {
         var (_, tokenService, options) = CreateSut();
 
-        var token = tokenService.CreateAccessToken(TestUser(), TestApplication(), Array.Empty<string>());
+        var token = tokenService.CreateAccessToken(TestUser(), TestApplication(), Array.Empty<string>(), TestSessionId);
         var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
         Assert.Equal(options.SigningKeyId, jwt.Header.Kid);
@@ -96,7 +100,7 @@ public class JwtTokenTests
         var (_, tokenService, options) = CreateSut(accessTokenLifetimeMinutes: 15);
 
         var before = DateTime.UtcNow;
-        var token = tokenService.CreateAccessToken(TestUser(), TestApplication(), Array.Empty<string>());
+        var token = tokenService.CreateAccessToken(TestUser(), TestApplication(), Array.Empty<string>(), TestSessionId);
         var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
         var expectedExpiry = before.AddMinutes(options.AccessTokenLifetimeMinutes);
@@ -109,7 +113,7 @@ public class JwtTokenTests
         var (keyProvider, tokenService, options) = CreateSut();
         var app = TestApplication();
 
-        var token = tokenService.CreateAccessToken(TestUser(), app, new[] { "profile" });
+        var token = tokenService.CreateAccessToken(TestUser(), app, new[] { "profile" }, TestSessionId);
 
         var handler = new JwtSecurityTokenHandler();
         var principal = handler.ValidateToken(token, new TokenValidationParameters
@@ -131,7 +135,7 @@ public class JwtTokenTests
         var (keyProvider, tokenService, options) = CreateSut();
         var app = TestApplication();
 
-        var token = tokenService.CreateAccessToken(TestUser(), app, Array.Empty<string>());
+        var token = tokenService.CreateAccessToken(TestUser(), app, Array.Empty<string>(), TestSessionId);
 
         var handler = new JwtSecurityTokenHandler();
         Assert.Throws<SecurityTokenInvalidAudienceException>(() => handler.ValidateToken(token, new TokenValidationParameters
@@ -151,11 +155,9 @@ public class JwtTokenTests
         var (keyProvider, tokenService, options) = CreateSut(accessTokenLifetimeMinutes: 1);
         var app = TestApplication();
 
-        var token = tokenService.CreateAccessToken(TestUser(), app, Array.Empty<string>());
+        var token = tokenService.CreateAccessToken(TestUser(), app, Array.Empty<string>(), TestSessionId);
 
         var handler = new JwtSecurityTokenHandler();
-        // Simulate the token already having expired by supplying a custom lifetime validator
-        // rather than sleeping in the test for real time to elapse.
         Assert.ThrowsAny<SecurityTokenException>(() => handler.ValidateToken(token, new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -175,7 +177,7 @@ public class JwtTokenTests
         var (keyProvider, tokenService, options) = CreateSut();
         var app = TestApplication();
 
-        var token = tokenService.CreateAccessToken(TestUser(), app, Array.Empty<string>());
+        var token = tokenService.CreateAccessToken(TestUser(), app, Array.Empty<string>(), TestSessionId);
         var tampered = token[..^1] + (token[^1] == 'A' ? 'B' : 'A');
 
         var handler = new JwtSecurityTokenHandler();

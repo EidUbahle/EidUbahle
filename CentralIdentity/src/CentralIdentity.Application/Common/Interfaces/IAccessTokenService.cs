@@ -4,5 +4,5 @@ namespace CentralIdentity.Application.Common.Interfaces;
 
 public interface IAccessTokenService
 {
-    string CreateAccessToken(IdentityUser user, IdentityApplication application, IEnumerable<string> scopes);
+    string CreateAccessToken(IdentityUser user, IdentityApplication application, IEnumerable<string> scopes, Guid sessionId);
 }

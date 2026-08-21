@@ -22,7 +22,7 @@ public sealed class JwtAccessTokenService : IAccessTokenService
         _options = options.Value;
     }
 
-    public string CreateAccessToken(IdentityUser user, IdentityApplication application, IEnumerable<string> scopes)
+    public string CreateAccessToken(IdentityUser user, IdentityApplication application, IEnumerable<string> scopes, Guid sessionId)
     {
         var now = DateTime.UtcNow;
         var expiry = now.AddMinutes(_options.AccessTokenLifetimeMinutes);
@@ -36,6 +36,7 @@ public sealed class JwtAccessTokenService : IAccessTokenService
             new("client_id", application.ClientId),
             new("application_id", application.ApplicationId.ToString()),
             new("application_code", application.ApplicationCode),
+            new("session_id", sessionId.ToString())
         };
         foreach (var scope in scopes)
             claims.Add(new Claim("scope", scope));

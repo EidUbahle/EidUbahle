@@ -1,3 +1,4 @@
+using CentralIdentity.Application.Common.Interfaces;
 using CentralIdentity.Application.Options;
 using CentralIdentity.Application.Services;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IApplicationService, ApplicationService>();
         services.AddScoped<IUserApplicationService, UserApplicationService>();
         services.AddScoped<IAuthorizationCodeService, AuthorizationCodeService>();
+        services.AddScoped<ITokenService, TokenService>();
 
         return services;
     }

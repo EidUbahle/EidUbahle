@@ -1,7 +1,7 @@
 namespace CentralIdentity.Contracts.OAuth;
 
 /// <summary>
-/// Form-encoded token request body (RFC 6749 §4.1.3 authorization_code grant, with PKCE — RFC 7636).
+/// Form-encoded token request body (RFC 6749 §4.1.3 authorization_code grant and refresh_token grant).
 /// Property names use the snake_case wire format mandated by RFC 6749; the API controller binds
 /// the individual form fields and maps them onto this DTO (kept framework-agnostic here).
 /// </summary>
@@ -13,4 +13,5 @@ public sealed class TokenRequest
     public string? ClientId { get; set; }
     public string? ClientSecret { get; set; }
     public string? CodeVerifier { get; set; }
+    public string? RefreshToken { get; set; }
 }

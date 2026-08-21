@@ -12,8 +12,7 @@ using Microsoft.Extensions.Options;
 namespace CentralIdentity.Api.Controllers;
 
 /// <summary>
-/// OAuth2 authorization_code grant + PKCE endpoints (RFC 6749 / RFC 7636) and the
-/// OIDC userinfo endpoint.
+/// OAuth2 authorization_code and refresh_token endpoints plus revocation and userinfo.
 /// </summary>
 [ApiController]
 [Route("connect")]
@@ -23,7 +22,7 @@ public sealed class ConnectController : ControllerBase
     private readonly IUserRepository _userRepo;
     private readonly IUserApplicationRepository _userAppRepo;
     private readonly IAuthorizationCodeService _authCodeService;
-    private readonly IAccessTokenService _accessTokenService;
+    private readonly ITokenService _tokenService;
     private readonly IClientSecretHasher _clientSecretHasher;
     private readonly OAuthOptions _oauthOptions;
     private readonly JwtOptions _jwtOptions;
@@ -34,7 +33,7 @@ public sealed class ConnectController : ControllerBase
         IUserRepository userRepo,
         IUserApplicationRepository userAppRepo,
         IAuthorizationCodeService authCodeService,
-        IAccessTokenService accessTokenService,
+        ITokenService tokenService,
         IClientSecretHasher clientSecretHasher,
         IOptions<OAuthOptions> oauthOptions,
         IOptions<JwtOptions> jwtOptions,
@@ -44,19 +43,13 @@ public sealed class ConnectController : ControllerBase
         _userRepo = userRepo;
         _userAppRepo = userAppRepo;
         _authCodeService = authCodeService;
-        _accessTokenService = accessTokenService;
+        _tokenService = tokenService;
         _clientSecretHasher = clientSecretHasher;
         _oauthOptions = oauthOptions.Value;
         _jwtOptions = jwtOptions.Value;
         _logger = logger;
     }
 
-    /// <summary>
-    /// Authorization endpoint. Issues a short-lived, single-use authorization code and redirects
-    /// the user agent back to the client's redirect_uri.
-    /// NOTE: this platform does not yet implement an interactive login/session UI, so the
-    /// already-authenticated user is identified via the <paramref name="userId"/> query parameter.
-    /// </summary>
     [HttpGet("authorize")]
     public async Task<IActionResult> Authorize(
         [FromQuery(Name = "response_type")] string? responseType,
@@ -110,7 +103,6 @@ public sealed class ConnectController : ControllerBase
         return Redirect(location);
     }
 
-    /// <summary>Token endpoint. Exchanges an authorization code (+ PKCE verifier) for an access token.</summary>
     [HttpPost("token")]
     [Consumes("application/x-www-form-urlencoded")]
     [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
@@ -122,6 +114,7 @@ public sealed class ConnectController : ControllerBase
         [FromForm(Name = "client_id")] string? clientId,
         [FromForm(Name = "client_secret")] string? clientSecret,
         [FromForm(Name = "code_verifier")] string? codeVerifier,
+        [FromForm(Name = "refresh_token")] string? refreshToken,
         CancellationToken ct)
     {
         var request = new TokenRequest
@@ -131,69 +124,48 @@ public sealed class ConnectController : ControllerBase
             RedirectUri = redirectUri,
             ClientId = clientId,
             ClientSecret = clientSecret,
-            CodeVerifier = codeVerifier
+            CodeVerifier = codeVerifier,
+            RefreshToken = refreshToken
         };
 
-        if (!string.Equals(request.GrantType, "authorization_code", StringComparison.Ordinal))
-            return BadRequest(new OAuthErrorResponse { Error = "unsupported_grant_type", ErrorDescription = "Only authorization_code is supported." });
-
-        if (string.IsNullOrWhiteSpace(request.Code) || string.IsNullOrWhiteSpace(request.ClientId) || string.IsNullOrWhiteSpace(request.RedirectUri))
-            return BadRequest(new OAuthErrorResponse { Error = "invalid_request", ErrorDescription = "code, client_id and redirect_uri are required." });
-
-        var app = await _appRepo.GetByClientIdAsync(request.ClientId, ct);
-        if (app is null || !app.IsActive)
-            return BadRequest(new OAuthErrorResponse { Error = "invalid_client", ErrorDescription = "Unknown or inactive client." });
-
-        if (string.Equals(app.ClientType, "Confidential", StringComparison.Ordinal))
+        return request.GrantType switch
         {
-            if (string.IsNullOrWhiteSpace(request.ClientSecret))
-                return Unauthorized(new OAuthErrorResponse { Error = "invalid_client", ErrorDescription = "client_secret is required for confidential clients." });
-
-            if (app.ClientSecretHash is null)
-            {
-                // Data integrity problem: a confidential client was persisted without a secret hash.
-                // This is a server-side misconfiguration, not something the caller can fix, so it
-                // must not be reported as an invalid_client/credentials error.
-                _logger.LogError(
-                    "Confidential application {ApplicationId} ({ClientId}) has no ClientSecretHash configured.",
-                    app.ApplicationId, app.ClientId);
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    new OAuthErrorResponse { Error = "server_error", ErrorDescription = "Client is misconfigured." });
-            }
-
-            if (!_clientSecretHasher.VerifySecret(request.ClientSecret, app.ClientSecretHash))
-                return Unauthorized(new OAuthErrorResponse { Error = "invalid_client", ErrorDescription = "client_secret is invalid." });
-        }
-
-        var codeValidation = await _authCodeService.ValidateAndConsumeAsync(new ValidateAuthorizationCodeCommand(
-            request.Code, request.ClientId, request.RedirectUri, request.CodeVerifier), ct);
-
-        if (codeValidation.IsFailure)
-            return BadRequest(new OAuthErrorResponse { Error = "invalid_grant", ErrorDescription = codeValidation.Error });
-
-        var authCode = codeValidation.Value;
-
-        var user = await _userRepo.GetByIdAsync(authCode.UserId, ct);
-        if (user is null || !user.IsActive)
-            return BadRequest(new OAuthErrorResponse { Error = "invalid_grant", ErrorDescription = "User is unknown or inactive." });
-
-        var assignment = await _userAppRepo.GetAsync(user.UserId, app.ApplicationId, ct);
-        if (assignment is null || !assignment.IsActive)
-            return BadRequest(new OAuthErrorResponse { Error = "invalid_grant", ErrorDescription = "User access to this application has been revoked." });
-
-        var scopes = authCode.Scope.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        var accessToken = _accessTokenService.CreateAccessToken(user, app, scopes);
-
-        return Ok(new TokenResponse
-        {
-            AccessToken = accessToken,
-            TokenType = "Bearer",
-            ExpiresIn = _jwtOptions.AccessTokenLifetimeMinutes * 60,
-            Scope = authCode.Scope
-        });
+            "authorization_code" => await ExchangeAuthorizationCodeAsync(request, ct),
+            "refresh_token" => await RefreshTokensAsync(request, ct),
+            _ => BadRequest(new OAuthErrorResponse { Error = "unsupported_grant_type", ErrorDescription = "Only authorization_code and refresh_token are supported." })
+        };
     }
 
-    /// <summary>Returns claims about the currently authenticated resource owner.</summary>
+    [HttpPost("revoke")]
+    [Consumes("application/x-www-form-urlencoded")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Revoke(
+        [FromForm(Name = "token")] string? token,
+        [FromForm(Name = "token_type_hint")] string? tokenTypeHint,
+        [FromForm(Name = "client_id")] string? clientId,
+        [FromForm(Name = "client_secret")] string? clientSecret,
+        CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(clientId))
+            return Ok();
+
+        try
+        {
+            var app = await ValidateClientAsync(clientId, clientSecret, ct);
+            if (app is null)
+                return Ok();
+
+            if (tokenTypeHint is null || string.Equals(tokenTypeHint, "refresh_token", StringComparison.Ordinal))
+                await _tokenService.RevokeRefreshTokenAsync(token, clientId, ct);
+
+            return Ok();
+        }
+        catch (TokenRequestException ex)
+        {
+            return CreateErrorResult(ex);
+        }
+    }
+
     [HttpGet("userinfo")]
     [Authorize]
     [ProducesResponseType(typeof(UserInfoResponse), StatusCodes.Status200OK)]
@@ -211,9 +183,6 @@ public sealed class ConnectController : ControllerBase
         if (app is null || !app.IsActive)
             return Unauthorized(new OAuthErrorResponse { Error = "invalid_token", ErrorDescription = "Token references an unknown or inactive client." });
 
-        // Defense-in-depth: confirm the token's audience matches the audience registered for
-        // the application identified by its client_id claim (guards against audience confusion
-        // attacks where a token minted for one relying party is replayed against another).
         if (audienceClaim is null || !string.Equals(audienceClaim.Value, app.Audience, StringComparison.Ordinal))
             return Unauthorized(new OAuthErrorResponse { Error = "invalid_token", ErrorDescription = "Token audience does not match the client." });
 
@@ -232,5 +201,136 @@ public sealed class ConnectController : ControllerBase
             PhoneNumber = user.Phone,
             PhoneNumberVerified = user.PhoneVerified
         });
+    }
+
+    private async Task<IActionResult> ExchangeAuthorizationCodeAsync(TokenRequest request, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(request.Code) || string.IsNullOrWhiteSpace(request.ClientId) || string.IsNullOrWhiteSpace(request.RedirectUri))
+            return BadRequest(new OAuthErrorResponse { Error = "invalid_request", ErrorDescription = "code, client_id and redirect_uri are required." });
+
+        CentralIdentity.Domain.Entities.IdentityApplication? app;
+        try
+        {
+            app = await ValidateClientAsync(request.ClientId, request.ClientSecret, ct);
+        }
+        catch (TokenRequestException ex)
+        {
+            return CreateErrorResult(ex);
+        }
+
+        if (app is null)
+            return Unauthorized(new OAuthErrorResponse { Error = "invalid_client", ErrorDescription = "Unknown or inactive client." });
+
+        var codeValidation = await _authCodeService.ValidateAndConsumeAsync(new ValidateAuthorizationCodeCommand(
+            request.Code, request.ClientId, request.RedirectUri, request.CodeVerifier), ct);
+
+        if (codeValidation.IsFailure)
+            return BadRequest(new OAuthErrorResponse { Error = "invalid_grant", ErrorDescription = codeValidation.Error });
+
+        var authCode = codeValidation.Value;
+        var user = await _userRepo.GetByIdAsync(authCode.UserId, ct);
+        if (user is null || !user.IsActive)
+            return BadRequest(new OAuthErrorResponse { Error = "invalid_grant", ErrorDescription = "User is unknown or inactive." });
+
+        var assignment = await _userAppRepo.GetAsync(user.UserId, app.ApplicationId, ct);
+        if (assignment is null || !assignment.IsActive)
+            return BadRequest(new OAuthErrorResponse { Error = "invalid_grant", ErrorDescription = "User access to this application has been revoked." });
+
+        var scopes = authCode.Scope.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        try
+        {
+            var result = await _tokenService.IssueTokensAsync(user, app, scopes, GetIpAddress(), GetUserAgent(), ct);
+            return Ok(new TokenResponse
+            {
+                AccessToken = result.accessToken,
+                RefreshToken = result.refreshToken,
+                SessionId = result.session.SessionId.ToString(),
+                TokenType = "Bearer",
+                ExpiresIn = _jwtOptions.AccessTokenLifetimeMinutes * 60,
+                Scope = authCode.Scope
+            });
+        }
+        catch (TokenRequestException ex)
+        {
+            return CreateErrorResult(ex);
+        }
+    }
+
+    private async Task<IActionResult> RefreshTokensAsync(TokenRequest request, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(request.ClientId) || string.IsNullOrWhiteSpace(request.RefreshToken))
+            return BadRequest(new OAuthErrorResponse { Error = "invalid_request", ErrorDescription = "client_id and refresh_token are required." });
+
+        try
+        {
+            var app = await ValidateClientAsync(request.ClientId, request.ClientSecret, ct);
+            if (app is null)
+                return Unauthorized(new OAuthErrorResponse { Error = "invalid_client", ErrorDescription = "Unknown or inactive client." });
+
+            var result = await _tokenService.RefreshAsync(request.RefreshToken, request.ClientId, GetIpAddress(), GetUserAgent(), ct);
+            return Ok(new TokenResponse
+            {
+                AccessToken = result.accessToken,
+                RefreshToken = result.refreshToken,
+                SessionId = ReadSessionId(result.accessToken),
+                TokenType = "Bearer",
+                ExpiresIn = _jwtOptions.AccessTokenLifetimeMinutes * 60,
+                Scope = ReadScope(result.accessToken)
+            });
+        }
+        catch (TokenRequestException ex)
+        {
+            return CreateErrorResult(ex);
+        }
+    }
+
+    private async Task<CentralIdentity.Domain.Entities.IdentityApplication?> ValidateClientAsync(string clientId, string? clientSecret, CancellationToken ct)
+    {
+        var app = await _appRepo.GetByClientIdAsync(clientId, ct);
+        if (app is null || !app.IsActive)
+            return null;
+
+        if (string.Equals(app.ClientType, "Confidential", StringComparison.Ordinal))
+        {
+            if (string.IsNullOrWhiteSpace(clientSecret))
+                throw new TokenRequestException("invalid_client", "client_secret is required for confidential clients.");
+
+            if (app.ClientSecretHash is null)
+            {
+                _logger.LogError("Confidential application {ApplicationId} ({ClientId}) has no ClientSecretHash configured.", app.ApplicationId, app.ClientId);
+                throw new TokenRequestException("server_error", "Client is misconfigured.");
+            }
+
+            if (!_clientSecretHasher.VerifySecret(clientSecret, app.ClientSecretHash))
+                throw new TokenRequestException("invalid_client", "client_secret is invalid.");
+        }
+
+        return app;
+    }
+
+    private IActionResult CreateErrorResult(TokenRequestException ex)
+    {
+        var payload = new OAuthErrorResponse { Error = ex.Error, ErrorDescription = ex.Description };
+        return ex.Error switch
+        {
+            "invalid_client" => Unauthorized(payload),
+            "server_error" => StatusCode(StatusCodes.Status500InternalServerError, payload),
+            _ => BadRequest(payload)
+        };
+    }
+
+    private string? GetIpAddress() => HttpContext.Connection.RemoteIpAddress?.ToString();
+    private string? GetUserAgent() => Request.Headers.UserAgent.Count == 0 ? null : Request.Headers.UserAgent.ToString();
+
+    private static string? ReadSessionId(string accessToken)
+    {
+        var jwt = new JwtSecurityTokenHandler().ReadJwtToken(accessToken);
+        return jwt.Claims.FirstOrDefault(c => c.Type == "session_id")?.Value;
+    }
+
+    private static string ReadScope(string accessToken)
+    {
+        var jwt = new JwtSecurityTokenHandler().ReadJwtToken(accessToken);
+        return string.Join(' ', jwt.Claims.Where(c => c.Type == "scope").Select(c => c.Value));
     }
 }
