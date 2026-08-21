@@ -13,6 +13,9 @@ namespace CentralIdentity.IntegrationTests.Support;
 /// </summary>
 public static class TestServiceCollectionExtensions
 {
+    public static void ReplaceWithFakes(this IServiceCollection services) =>
+        services.ReplaceRepositoriesWithFakes();
+
     public static void ReplaceRepositoriesWithFakes(this IServiceCollection services)
     {
         services.RemoveAll<IUserRepository>();

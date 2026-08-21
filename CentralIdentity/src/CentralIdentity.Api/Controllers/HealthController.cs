@@ -8,6 +8,7 @@ namespace CentralIdentity.Api.Controllers;
 /// Health check endpoints.
 /// </summary>
 [Route("api/[controller]")]
+[Route("health")]
 public sealed class HealthController : ApiControllerBase
 {
     private readonly HealthCheckService _healthCheckService;

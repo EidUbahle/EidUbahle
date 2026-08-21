@@ -153,7 +153,13 @@ public sealed class ConnectController : ControllerBase
         CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(clientId))
-            return Ok();
+        {
+            return BadRequest(new OAuthErrorResponse
+            {
+                Error = "invalid_request",
+                ErrorDescription = "token and client_id are required."
+            });
+        }
 
         try
         {
