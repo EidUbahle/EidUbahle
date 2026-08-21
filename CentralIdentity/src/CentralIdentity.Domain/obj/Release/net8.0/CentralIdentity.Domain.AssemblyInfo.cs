@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CentralIdentity.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bf9861b02ac3d6a6e29c4b9f8dabae84a7e76f0f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d268eb6e70c50152a0d3a191506ec8763333362f")]
 [assembly: System.Reflection.AssemblyProductAttribute("CentralIdentity.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CentralIdentity.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

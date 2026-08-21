@@ -6,6 +6,7 @@ using CentralIdentity.Application.Services;
 using CentralIdentity.Contracts.OAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace CentralIdentity.Api.Controllers;
@@ -26,6 +27,7 @@ public sealed class ConnectController : ControllerBase
     private readonly IClientSecretHasher _clientSecretHasher;
     private readonly OAuthOptions _oauthOptions;
     private readonly JwtOptions _jwtOptions;
+    private readonly ILogger<ConnectController> _logger;
 
     public ConnectController(
         IApplicationRepository appRepo,
@@ -35,7 +37,8 @@ public sealed class ConnectController : ControllerBase
         IAccessTokenService accessTokenService,
         IClientSecretHasher clientSecretHasher,
         IOptions<OAuthOptions> oauthOptions,
-        IOptions<JwtOptions> jwtOptions)
+        IOptions<JwtOptions> jwtOptions,
+        ILogger<ConnectController> logger)
     {
         _appRepo = appRepo;
         _userRepo = userRepo;
@@ -45,6 +48,7 @@ public sealed class ConnectController : ControllerBase
         _clientSecretHasher = clientSecretHasher;
         _oauthOptions = oauthOptions.Value;
         _jwtOptions = jwtOptions.Value;
+        _logger = logger;
     }
 
     /// <summary>
@@ -142,8 +146,20 @@ public sealed class ConnectController : ControllerBase
 
         if (string.Equals(app.ClientType, "Confidential", StringComparison.Ordinal))
         {
-            if (string.IsNullOrWhiteSpace(request.ClientSecret) || app.ClientSecretHash is null)
+            if (string.IsNullOrWhiteSpace(request.ClientSecret))
                 return Unauthorized(new OAuthErrorResponse { Error = "invalid_client", ErrorDescription = "client_secret is required for confidential clients." });
+
+            if (app.ClientSecretHash is null)
+            {
+                // Data integrity problem: a confidential client was persisted without a secret hash.
+                // This is a server-side misconfiguration, not something the caller can fix, so it
+                // must not be reported as an invalid_client/credentials error.
+                _logger.LogError(
+                    "Confidential application {ApplicationId} ({ClientId}) has no ClientSecretHash configured.",
+                    app.ApplicationId, app.ClientId);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new OAuthErrorResponse { Error = "server_error", ErrorDescription = "Client is misconfigured." });
+            }
 
             if (!_clientSecretHasher.VerifySecret(request.ClientSecret, app.ClientSecretHash))
                 return Unauthorized(new OAuthErrorResponse { Error = "invalid_client", ErrorDescription = "client_secret is invalid." });

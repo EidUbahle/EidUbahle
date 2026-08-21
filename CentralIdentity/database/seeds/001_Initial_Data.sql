@@ -1,7 +1,9 @@
 -- ============================================================
 -- Seed: 001_Initial_Data.sql
 -- Description: Placeholder for initial reference/seed data.
---              Will be populated in Phase 2.
+--              Phase 2/3 (users, applications, OAuth) are provisioned
+--              via the API (see UsersController/ApplicationsController)
+--              rather than static seed data, so none is required here.
 -- ============================================================
 
--- No seed data required for Phase 1.
+-- No seed data required.
