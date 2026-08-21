@@ -9,4 +9,5 @@ public sealed class SecurityOptions
     public int ActivityUpdateIntervalMinutes { get; set; } = 15;
     public int InactivityJobIntervalMinutes { get; set; } = 60;
     public int InactivityBatchSize { get; set; } = 500;
+    public string MfaEncryptionKey { get; set; } = string.Empty;
 }

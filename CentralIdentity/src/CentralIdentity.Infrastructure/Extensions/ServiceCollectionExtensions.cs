@@ -24,12 +24,14 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IPermissionRepository, PermissionRepository>();
         services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+        services.AddScoped<IMfaRepository, MfaRepository>();
 
         // Security
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
         services.AddSingleton<IClientSecretHasher, Pbkdf2ClientSecretHasher>();
         services.AddSingleton<IJwtKeyProvider, RsaJwtKeyProvider>();
         services.AddSingleton<IAccessTokenService, JwtAccessTokenService>();
+        services.AddSingleton<IMfaService, TotpMfaService>();
 
         return services;
     }

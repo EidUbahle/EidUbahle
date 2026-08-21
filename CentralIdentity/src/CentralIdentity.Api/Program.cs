@@ -37,6 +37,7 @@ try
 
     // CORS
     builder.Services.AddCorsPolicy(builder.Configuration);
+    builder.Services.AddRateLimiting();
 
     // Health Checks
     builder.Services.AddApplicationHealthChecks();
@@ -61,6 +62,7 @@ try
 
     // Global exception handler (must be first)
     app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+    app.UseMiddleware<SecurityHeadersMiddleware>();
 
     if (app.Environment.IsDevelopment())
     {
@@ -82,6 +84,7 @@ try
         options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
     });
     app.UseCors("DefaultCors");
+    app.UseRateLimiter();
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();

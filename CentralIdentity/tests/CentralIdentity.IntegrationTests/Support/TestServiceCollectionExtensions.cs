@@ -36,6 +36,9 @@ public static class TestServiceCollectionExtensions
         services.RemoveAll<IAuditLogRepository>();
         services.AddSingleton<IAuditLogRepository, FakeAuditLogRepository>();
 
+        services.RemoveAll<IMfaRepository>();
+        services.AddSingleton<IMfaRepository, FakeMfaRepository>();
+
         services.RemoveAll<IRoleRepository>();
         services.AddSingleton<IRoleRepository, FakeRoleRepository>();
 

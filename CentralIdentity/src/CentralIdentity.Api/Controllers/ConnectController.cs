@@ -6,6 +6,7 @@ using CentralIdentity.Application.Services;
 using CentralIdentity.Contracts.OAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -51,6 +52,7 @@ public sealed class ConnectController : ControllerBase
     }
 
     [HttpGet("authorize")]
+    [EnableRateLimiting("login")]
     public async Task<IActionResult> Authorize(
         [FromQuery(Name = "response_type")] string? responseType,
         [FromQuery(Name = "client_id")] string? clientId,
@@ -85,6 +87,9 @@ public sealed class ConnectController : ControllerBase
         if (user is null || !user.IsActive)
             return BadRequest(new OAuthErrorResponse { Error = "access_denied", ErrorDescription = "User is unknown or inactive." });
 
+        if (user.LockoutEndUtc.HasValue && user.LockoutEndUtc.Value > DateTime.UtcNow)
+            return BadRequest(new OAuthErrorResponse { Error = "access_denied", ErrorDescription = "Account is locked." });
+
         var assignment = await _userAppRepo.GetAsync(user.UserId, app.ApplicationId, ct);
         if (assignment is null || !assignment.IsActive)
             return BadRequest(new OAuthErrorResponse { Error = "access_denied", ErrorDescription = "User does not have access to this application." });
@@ -104,6 +109,7 @@ public sealed class ConnectController : ControllerBase
     }
 
     [HttpPost("token")]
+    [EnableRateLimiting("token")]
     [Consumes("application/x-www-form-urlencoded")]
     [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(OAuthErrorResponse), StatusCodes.Status400BadRequest)]

@@ -5,6 +5,7 @@ using CentralIdentity.Infrastructure.Data;
 using CentralIdentity.Infrastructure.Extensions;
 using CentralIdentity.Application.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -102,6 +103,37 @@ public static class ServiceCollectionExtensions
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             if (File.Exists(xmlPath))
                 options.IncludeXmlComments(xmlPath);
+        });
+
+        return services;
+    }
+
+    public static IServiceCollection AddRateLimiting(this IServiceCollection services)
+    {
+        services.AddRateLimiter(options =>
+        {
+            options.AddFixedWindowLimiter("login", o =>
+            {
+                o.PermitLimit = 10;
+                o.Window = TimeSpan.FromMinutes(1);
+                o.QueueLimit = 0;
+            });
+
+            options.AddFixedWindowLimiter("token", o =>
+            {
+                o.PermitLimit = 30;
+                o.Window = TimeSpan.FromMinutes(1);
+                o.QueueLimit = 0;
+            });
+
+            options.AddFixedWindowLimiter("mfa", o =>
+            {
+                o.PermitLimit = 5;
+                o.Window = TimeSpan.FromMinutes(1);
+                o.QueueLimit = 0;
+            });
+
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
         });
 
         return services;
