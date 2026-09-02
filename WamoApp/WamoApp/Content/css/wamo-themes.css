@@ -1,0 +1,16 @@
+:root { --wamo-primary:#0f7a42; --wamo-secondary:#1b4332; --wamo-accent:#95d5b2; --wamo-surface:#fff; --wamo-body:#f5f7f8; --wamo-text:#1f2937; }
+body { background:var(--wamo-body); color:var(--wamo-text); }
+.wamo-body .card,.wamo-body .modal-content,.wamo-body .table,.wamo-body .form-control,.wamo-body .form-select { border-radius:.9rem; }
+.wamo-hero { background:linear-gradient(135deg, rgba(15,122,66,.95), rgba(57,138,91,.85)); color:#fff; border-radius:1.25rem; }
+.wamo-install-prompt { position:fixed; right:1rem; bottom:1rem; z-index:1080; max-width:340px; }
+.wamo-whatsapp-fab { position:fixed; right:1rem; bottom:6rem; z-index:1070; }
+.theme-green { --wamo-primary:#0f7a42; --wamo-secondary:#1b4332; --wamo-accent:#95d5b2; --wamo-surface:#fff; --wamo-body:#f5f7f8; --wamo-text:#1f2937; }
+.theme-blue { --wamo-primary:#0d6efd; --wamo-secondary:#003566; --wamo-accent:#90e0ef; --wamo-surface:#fff; --wamo-body:#edf6ff; --wamo-text:#1d3557; }
+.theme-dark { --wamo-primary:#52b788; --wamo-secondary:#081c15; --wamo-accent:#d8f3dc; --wamo-surface:#1f2937; --wamo-body:#111827; --wamo-text:#f3f4f6; }
+.theme-light { --wamo-primary:#198754; --wamo-secondary:#6c757d; --wamo-accent:#f8f9fa; --wamo-surface:#fff; --wamo-body:#fff; --wamo-text:#212529; }
+.theme-dark .card,.theme-dark .table,.theme-dark .list-group-item,.theme-dark .modal-content { background:#1f2937; color:#f3f4f6; }
+.navbar,.btn-success,.bg-success { background-color:var(--wamo-primary)!important; }
+.btn-outline-success,.text-success { color:var(--wamo-primary)!important; }
+.btn-outline-success { border-color:var(--wamo-primary)!important; }
+.table thead th { background:rgba(0,0,0,.03); }
+[dir="rtl"] .wamo-install-prompt,[dir="rtl"] .wamo-whatsapp-fab { left:1rem; right:auto; }

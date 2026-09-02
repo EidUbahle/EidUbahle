@@ -1,0 +1,2 @@
+<%@ Page Title="Access Denied" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" Inherits="WamoApp.AccessDeniedPage" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContentPublic" runat="server"><div class="row justify-content-center"><div class="col-lg-6"><div class="card shadow-sm"><div class="card-body p-5 text-center"><h1 class="display-6">Access Denied</h1><p class="text-muted">You do not have permission to access this page or resource.</p><a class="btn btn-success" href="Default.aspx">Return Home</a></div></div></div></div></asp:Content>

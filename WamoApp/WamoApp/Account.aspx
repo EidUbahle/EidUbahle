@@ -1,0 +1,2 @@
+<%@ Page Title="My Account" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Account.aspx.cs" Inherits="WamoApp.AccountPage" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContentPublic" runat="server"><div class="card shadow-sm"><div class="card-body p-4"><h1 class="h3 mb-3">Customer Account</h1><div id="accountDashboard" class="bg-light rounded p-3"></div></div></div></asp:Content>

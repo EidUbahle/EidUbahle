@@ -1,0 +1,2 @@
+<%@ Page Title="WAMO Shop" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Shop.aspx.cs" Inherits="WamoApp.ShopPage" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContentPublic" runat="server"><div class="d-flex justify-content-between align-items-center mb-3"><h1 class="h3 mb-0">WAMO Shop</h1><a class="btn btn-success" href="Contact.aspx">Contact WAMO</a></div><div id="shopProducts" class="row g-3"></div></asp:Content>

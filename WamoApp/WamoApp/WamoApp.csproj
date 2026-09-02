@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets')" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0D1D8FD0-4D95-4E91-B838-9D2BAF3C98C2}</ProjectGuid>
+    <ProjectTypeGuids>{349C5851-65DF-11DA-9384-00065B846F21};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>WamoApp</RootNamespace>
+    <AssemblyName>WamoApp</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols><DebugType>full</DebugType><Optimize>false</Optimize><OutputPath>bin\</OutputPath><DefineConstants>DEBUG;TRACE</DefineConstants><WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType><Optimize>true</Optimize><OutputPath>bin\</OutputPath><DefineConstants>TRACE</DefineConstants><WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" /><Reference Include="System.Configuration" /><Reference Include="System.Core" /><Reference Include="System.Data" /><Reference Include="System.Data.DataSetExtensions" /><Reference Include="System.Net.Http" /><Reference Include="System.Web" /><Reference Include="System.Web.Extensions" /><Reference Include="System.Xml" /><Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Default.aspx" />
+    <Compile Include="Default.aspx.cs"><DependentUpon>Default.aspx</DependentUpon></Compile>
+    <Content Include="Login.aspx" />
+    <Compile Include="Login.aspx.cs"><DependentUpon>Login.aspx</DependentUpon></Compile>
+    <Content Include="ForgotPassword.aspx" />
+    <Compile Include="ForgotPassword.aspx.cs"><DependentUpon>ForgotPassword.aspx</DependentUpon></Compile>
+    <Content Include="ResetPassword.aspx" />
+    <Compile Include="ResetPassword.aspx.cs"><DependentUpon>ResetPassword.aspx</DependentUpon></Compile>
+    <Content Include="Register.aspx" />
+    <Compile Include="Register.aspx.cs"><DependentUpon>Register.aspx</DependentUpon></Compile>
+    <Content Include="Request.aspx" />
+    <Compile Include="Request.aspx.cs"><DependentUpon>Request.aspx</DependentUpon></Compile>
+    <Content Include="Shop.aspx" />
+    <Compile Include="Shop.aspx.cs"><DependentUpon>Shop.aspx</DependentUpon></Compile>
+    <Content Include="Blog.aspx" />
+    <Compile Include="Blog.aspx.cs"><DependentUpon>Blog.aspx</DependentUpon></Compile>
+    <Content Include="Contact.aspx" />
+    <Compile Include="Contact.aspx.cs"><DependentUpon>Contact.aspx</DependentUpon></Compile>
+    <Content Include="Account.aspx" />
+    <Compile Include="Account.aspx.cs"><DependentUpon>Account.aspx</DependentUpon></Compile>
+    <Content Include="AccessDenied.aspx" />
+    <Content Include="Logout.aspx" />
+    <Content Include="Admin\Dashboard.aspx" />
+    <Compile Include="Admin\Dashboard.aspx.cs"><DependentUpon>Dashboard.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Customers.aspx" />
+    <Compile Include="Admin\Customers.aspx.cs"><DependentUpon>Customers.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Sections.aspx" />
+    <Compile Include="Admin\Sections.aspx.cs"><DependentUpon>Sections.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Blocks.aspx" />
+    <Compile Include="Admin\Blocks.aspx.cs"><DependentUpon>Blocks.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Houses.aspx" />
+    <Compile Include="Admin\Houses.aspx.cs"><DependentUpon>Houses.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Payments.aspx" />
+    <Compile Include="Admin\Payments.aspx.cs"><DependentUpon>Payments.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Collections.aspx" />
+    <Compile Include="Admin\Collections.aspx.cs"><DependentUpon>Collections.aspx</DependentUpon></Compile>
+    <Content Include="Admin\CollectionRequests.aspx" />
+    <Compile Include="Admin\CollectionRequests.aspx.cs"><DependentUpon>CollectionRequests.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Complaints.aspx" />
+    <Compile Include="Admin\Complaints.aspx.cs"><DependentUpon>Complaints.aspx</DependentUpon></Compile>
+    <Content Include="Admin\ShopOrders.aspx" />
+    <Compile Include="Admin\ShopOrders.aspx.cs"><DependentUpon>ShopOrders.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Products.aspx" />
+    <Compile Include="Admin\Products.aspx.cs"><DependentUpon>Products.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Blog.aspx" />
+    <Compile Include="Admin\Blog.aspx.cs"><DependentUpon>Blog.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Announcements.aspx" />
+    <Compile Include="Admin\Announcements.aspx.cs"><DependentUpon>Announcements.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Users.aspx" />
+    <Compile Include="Admin\Users.aspx.cs"><DependentUpon>Users.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Roles.aspx" />
+    <Compile Include="Admin\Roles.aspx.cs"><DependentUpon>Roles.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Permissions.aspx" />
+    <Compile Include="Admin\Permissions.aspx.cs"><DependentUpon>Permissions.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Sessions.aspx" />
+    <Compile Include="Admin\Sessions.aspx.cs"><DependentUpon>Sessions.aspx</DependentUpon></Compile>
+    <Content Include="Admin\AuditLogs.aspx" />
+    <Compile Include="Admin\AuditLogs.aspx.cs"><DependentUpon>AuditLogs.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Languages.aspx" />
+    <Compile Include="Admin\Languages.aspx.cs"><DependentUpon>Languages.aspx</DependentUpon></Compile>
+    <Content Include="Admin\Settings.aspx" />
+    <Compile Include="Admin\Settings.aspx.cs"><DependentUpon>Settings.aspx</DependentUpon></Compile>
+    <Compile Include="App_Code\DbHelper.cs" />
+    <Compile Include="App_Code\SecurityHelper.cs" />
+    <Compile Include="App_Code\PasswordHasher.cs" />
+    <Compile Include="App_Code\SessionManager.cs" />
+    <Compile Include="App_Code\PermissionManager.cs" />
+    <Compile Include="App_Code\AuditLogger.cs" />
+    <Compile Include="App_Code\EmailService.cs" />
+    <Compile Include="App_Code\LocalizationHelper.cs" />
+    <Compile Include="App_Code\BasePage.cs" />
+    <Compile Include="App_Code\AdminDataService.cs" />
+    <Compile Include="Global.asax.cs"><DependentUpon>Global.asax</DependentUpon></Compile>
+    <Compile Include="Site.Master.cs"><DependentUpon>Site.Master</DependentUpon></Compile>
+    <Content Include="Global.asax" /><Content Include="Site.Master" /><Content Include="Web.config" /><Content Include="Content\css\wamo-themes.css" /><Content Include="Content\js\wamo.js" /><Content Include="PWA\manifest.json" /><Content Include="PWA\service-worker.js" /><Content Include="PWA\offline.html" /><Content Include="App_Data\WamoDB.sql" />
+  </ItemGroup>
+</Project>

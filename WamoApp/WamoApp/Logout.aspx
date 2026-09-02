@@ -1,0 +1,2 @@
+<%@ Page Title="Logout" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" Inherits="WamoApp.LogoutPage" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContentPublic" runat="server"><div class="alert alert-info">Logging out...</div></asp:Content>

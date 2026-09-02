@@ -1,0 +1,2 @@
+<%@ Page Title="Blog" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Blog.aspx.cs" Inherits="WamoApp.BlogPage" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContentPublic" runat="server"><div class="card shadow-sm"><div class="card-body p-4"><div class="d-flex justify-content-between align-items-center mb-3"><h1 class="h3 mb-0">Blog & News</h1><input class="form-control w-auto" placeholder="Search" /></div><div id="blogPosts" class="row g-3"></div></div></div></asp:Content>

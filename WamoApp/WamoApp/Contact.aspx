@@ -1,0 +1,2 @@
+<%@ Page Title="Contact WAMO" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Contact.aspx.cs" Inherits="WamoApp.ContactPage" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContentPublic" runat="server"><div class="card shadow-sm"><div class="card-body p-4"><h1 class="h3 mb-3">Contact WAMO</h1><div id="contactCards" class="row g-3"></div></div></div></asp:Content>
