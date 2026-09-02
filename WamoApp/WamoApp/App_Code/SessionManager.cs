@@ -51,8 +51,8 @@ namespace WamoApp
             var expiry = rememberMe ? (object)now.AddDays(GetRememberMeDays()) : DBNull.Value;
             DbHelper.ExecuteNonQuery(@"INSERT INTO UserSessions (SessionID, UserID, SessionTokenHash, LoginTime, LastActivity, ExpirationTime, IPAddress, UserAgent, DeviceName, Browser, OperatingSystem, IsActive, IsRevoked) VALUES (@SessionID,@UserID,@SessionTokenHash,@LoginTime,@LastActivity,@ExpirationTime,@IPAddress,@UserAgent,@DeviceName,@Browser,@OperatingSystem,1,0)", CommandType.Text, new SqlParameter("@SessionID", sessionId), new SqlParameter("@UserID", userId), new SqlParameter("@SessionTokenHash", PasswordHasher.HashPassword(token)), new SqlParameter("@LoginTime", now), new SqlParameter("@LastActivity", now), new SqlParameter("@ExpirationTime", expiry), new SqlParameter("@IPAddress", SecurityHelper.GetIpAddress()), new SqlParameter("@UserAgent", SecurityHelper.GetUserAgent()), new SqlParameter("@DeviceName", HttpContext.Current.Request.Browser.Platform), new SqlParameter("@Browser", HttpContext.Current.Request.Browser.Browser), new SqlParameter("@OperatingSystem", HttpContext.Current.Request.Browser.Platform));
             var ticket = new FormsAuthenticationTicket(1, username, DateTime.Now, DateTime.Now.AddDays(rememberMe ? GetRememberMeDays() : 1), rememberMe, userId + "|" + roleList);
-            HttpContext.Current.Response.Cookies.Set(new HttpCookie(ConfigurationManager.AppSettings["AuthCookieName"] ?? FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket)) { HttpOnly = true, Secure = HttpContext.Current.Request.IsSecureConnection || SecurityHelper.IsHttpsRequired(), SameSite = SameSiteMode.Lax, Expires = rememberMe ? DateTime.UtcNow.AddDays(GetRememberMeDays()) : DateTime.MinValue });
-            HttpContext.Current.Response.Cookies.Set(new HttpCookie(GetSessionCookieName(), token) { HttpOnly = true, Secure = HttpContext.Current.Request.IsSecureConnection || SecurityHelper.IsHttpsRequired(), SameSite = SameSiteMode.Lax, Expires = rememberMe ? DateTime.UtcNow.AddDays(GetRememberMeDays()) : DateTime.MinValue });
+            HttpContext.Current.Response.Cookies.Set(new HttpCookie(ConfigurationManager.AppSettings["AuthCookieName"] ?? FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket)) { HttpOnly = true, Secure = HttpContext.Current.Request.IsSecureConnection || SecurityHelper.IsHttpsRequired(), Expires = rememberMe ? DateTime.UtcNow.AddDays(GetRememberMeDays()) : DateTime.MinValue });
+            HttpContext.Current.Response.Cookies.Set(new HttpCookie(GetSessionCookieName(), token) { HttpOnly = true, Secure = HttpContext.Current.Request.IsSecureConnection || SecurityHelper.IsHttpsRequired(), Expires = rememberMe ? DateTime.UtcNow.AddDays(GetRememberMeDays()) : DateTime.MinValue });
             return token;
         }
 
@@ -77,9 +77,10 @@ namespace WamoApp
             if (matchedRow == null) { ForceLogout(); throw new UnauthorizedAccessException("Invalid session token."); }
             if (Convert.ToBoolean(matchedRow["IsRevoked"]) || !Convert.ToBoolean(matchedRow["IsActive"])) { ForceLogout(); throw new UnauthorizedAccessException("Session revoked."); }
             var expiry = matchedRow["ExpirationTime"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(matchedRow["ExpirationTime"]);
-            if (expiry.HasValue && expiry.Value < DateTime.UtcNow) { RevokeSession(Convert.ToGuid(matchedRow["SessionID"]), GetCurrentUserId(), "Expired"); ForceLogout(); throw new UnauthorizedAccessException("Session expired."); }
-            if (Convert.ToDateTime(matchedRow["LastActivity"]) < DateTime.UtcNow.AddMinutes(-GetInactivityMinutes())) { RevokeSession(Convert.ToGuid(matchedRow["SessionID"]), GetCurrentUserId(), "Inactivity timeout"); ForceLogout(); throw new UnauthorizedAccessException("Session timed out."); }
-            DbHelper.ExecuteNonQuery("UPDATE UserSessions SET LastActivity = GETUTCDATE() WHERE SessionID = @SessionID", CommandType.Text, new SqlParameter("@SessionID", Convert.ToGuid(matchedRow["SessionID"])));
+            var sessionId = Guid.Parse(matchedRow["SessionID"].ToString());
+            if (expiry.HasValue && expiry.Value < DateTime.UtcNow) { RevokeSession(sessionId, GetCurrentUserId(), "Expired"); ForceLogout(); throw new UnauthorizedAccessException("Session expired."); }
+            if (Convert.ToDateTime(matchedRow["LastActivity"]) < DateTime.UtcNow.AddMinutes(-GetInactivityMinutes())) { RevokeSession(sessionId, GetCurrentUserId(), "Inactivity timeout"); ForceLogout(); throw new UnauthorizedAccessException("Session timed out."); }
+            DbHelper.ExecuteNonQuery("UPDATE UserSessions SET LastActivity = GETUTCDATE() WHERE SessionID = @SessionID", CommandType.Text, new SqlParameter("@SessionID", sessionId));
         }
 
         public static void LogoutCurrentUser()
@@ -117,7 +118,7 @@ namespace WamoApp
         private static void ExpireCookie(string name)
         {
             if (HttpContext.Current == null) return;
-            HttpContext.Current.Response.Cookies.Set(new HttpCookie(name, string.Empty) { Expires = DateTime.UtcNow.AddDays(-1), HttpOnly = true, Secure = HttpContext.Current.Request.IsSecureConnection || SecurityHelper.IsHttpsRequired(), SameSite = SameSiteMode.Lax });
+            HttpContext.Current.Response.Cookies.Set(new HttpCookie(name, string.Empty) { Expires = DateTime.UtcNow.AddDays(-1), HttpOnly = true, Secure = HttpContext.Current.Request.IsSecureConnection || SecurityHelper.IsHttpsRequired() });
         }
 
         private static int GetRememberMeDays() { int v; return int.TryParse(ConfigurationManager.AppSettings["RememberMeDays"], out v) ? v : 30; }

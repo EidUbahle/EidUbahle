@@ -23,7 +23,7 @@ namespace WamoApp
         public static void SetLanguageCookie(string code)
         {
             if (HttpContext.Current == null) return;
-            HttpContext.Current.Response.Cookies.Set(new HttpCookie("WAMO_LANG", code) { HttpOnly = false, Secure = HttpContext.Current.Request.IsSecureConnection || SecurityHelper.IsHttpsRequired(), SameSite = SameSiteMode.Lax, Expires = DateTime.UtcNow.AddYears(1) });
+            HttpContext.Current.Response.Cookies.Set(new HttpCookie("WAMO_LANG", code) { HttpOnly = false, Secure = HttpContext.Current.Request.IsSecureConnection || SecurityHelper.IsHttpsRequired(), Expires = DateTime.UtcNow.AddYears(1) });
         }
 
         public static bool IsRightToLeft(string code) => string.Equals(code, "ar", StringComparison.OrdinalIgnoreCase);

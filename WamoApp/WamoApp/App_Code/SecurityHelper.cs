@@ -34,7 +34,7 @@ namespace WamoApp
                 rng.GetBytes(bytes);
             }
             var token = Convert.ToBase64String(bytes);
-            context.Response.Cookies.Set(new HttpCookie("WAMO_CSRF", token) { HttpOnly = false, Secure = context.Request.IsSecureConnection || IsHttpsRequired(), SameSite = SameSiteMode.Lax, Path = "/" });
+            context.Response.Cookies.Set(new HttpCookie("WAMO_CSRF", token) { HttpOnly = false, Secure = context.Request.IsSecureConnection || IsHttpsRequired(), Path = "/" });
             return token;
         }
 

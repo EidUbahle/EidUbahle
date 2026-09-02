@@ -53,6 +53,6 @@ namespace WamoApp
             return sb.ToString();
         }
 
-        public static string NormalizePagePath(string pagePath) => (pagePath ?? string.Empty).TrimStart('~', '/').Replace('\', '/');
+        public static string NormalizePagePath(string pagePath) => (pagePath ?? string.Empty).TrimStart('~', '/').Replace('\\', '/');
     }
 }

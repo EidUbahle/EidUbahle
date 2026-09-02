@@ -16,11 +16,11 @@ namespace WamoApp
                 rng.GetBytes(salt);
             }
             byte[] hash;
-            using (var deriveBytes = new Rfc2898DeriveBytes(password, salt, iterations, HashAlgorithmName.SHA256))
+            using (var deriveBytes = new Rfc2898DeriveBytes(password, salt, iterations))
             {
                 hash = deriveBytes.GetBytes(32);
             }
-            return string.Format("PBKDF2$sha256${0}${1}${2}", iterations, Convert.ToBase64String(salt), Convert.ToBase64String(hash));
+            return string.Format("PBKDF2$sha1${0}${1}${2}", iterations, Convert.ToBase64String(salt), Convert.ToBase64String(hash));
         }
 
         public static bool VerifyPassword(string password, string storedHash)
@@ -32,7 +32,7 @@ namespace WamoApp
             var salt = Convert.FromBase64String(parts[3]);
             var expected = Convert.FromBase64String(parts[4]);
             byte[] actual;
-            using (var deriveBytes = new Rfc2898DeriveBytes(password, salt, iterations, HashAlgorithmName.SHA256))
+            using (var deriveBytes = new Rfc2898DeriveBytes(password, salt, iterations))
             {
                 actual = deriveBytes.GetBytes(expected.Length);
             }
